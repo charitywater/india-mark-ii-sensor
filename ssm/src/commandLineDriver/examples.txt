@@ -1,0 +1,112 @@
+
+Put this in your module initialization function to register a command and callback function
+
+/** - Init the command line command, register a callback */
+	CLD_Command_Handler_s buttonCmdHandler;
+
+	buttonCmdHandler.pfnPtrFunction = &xvButtonCommandHandlerFunction;
+	buttonCmdHandler.pszCmdString   = "button";
+	buttonCmdHandler.pszUsageString = "\t\t read";  // LIST ALL COMMANDS HERE
+	gvCLD_Register_This_Command_Handler(&buttonCmdHandler);
+	
+	//USER WOULD ENTER : button read 
+	
+	
+	
+This is an example of the handler callback function that we registered above:	
+	
+/**
+ * @fn     static void xvButtonCommandHandlerFunction(int swArgc, char **pszArgv)
+ *
+ * @brief  command handler callback function for the button module
+ *
+ * @param  swArgc = argument count
+ * @param  pszArgv = argument character array
+ *
+ * @return N/A
+ *
+ * @author Audrey Hendon
+ *
+ * @note   N/A
+ *
+ */
+static void xvButtonCommandHandlerFunction(int swArgc, char **pszArgv)
+{
+	rawButtonReadings_t buttons;
+
+	/** ###Functional Overview: */
+
+	/** - Check user input and handle */
+    if ( swArgc >= ONE_ARGUMENT && 0 == strcmp(pszArgv[FIRST_ARG_IDX], "read") )
+    {
+        /* get the raw input reading of each button */
+        gfBUTTON_DRV_getRawSamplesNoEnablePins(&buttons);
+
+        gfPrintData("Go Button: %d", buttons.ubGoButtonReading);
+        gfPrintData("Brake Button: %d", buttons.ubBrakeButtonReading );
+        gfPrintData("Horn Button: %d", buttons.ubHornButtonReading );
+        gfPrintData("Fourth Button: %d", buttons.ubFourthButtonReading );
+        gfPrintData("Fifth Button: %d", buttons.ubFifthButtonReading);
+    }
+    else
+    {
+        gfPrintData("Invalid argument");
+    }
+}
+
+
+This is an example of how I implemented the uart receive. After the user enters the return key, the 
+command line driver will find the handler for that command:
+
+/**
+ *  @fn     static void xvUartRxCb(UARTDRV_Handle_t handle, Ecode_t transferStatus, uint8_t *pubData,
+                             UARTDRV_Count_t transferCount)
+ *
+ *  @brief  This function called when the UART RX operation completed - note that sleep needs to
+ *          be disabled for rx to work properly
+ *
+ * @param  handle = UART handle
+ * @param  transferStatus = successful or not
+ * @param  pubData = Data that was received
+ * @param  transferCount = uart transfer count
+ *
+ * @return N/A
+ *
+ * @author Audrey Hendon
+ *
+ * @note   N/A
+ *
+ */
+static void xvUartRxCb(UARTDRV_Handle_t handle, Ecode_t transferStatus, uint8_t *pubData,
+                             UARTDRV_Count_t transferCount)
+{
+    /** ###Functional Overview: */
+
+    /* Increment buffer index */
+	xubUserInputBufferIdx++;
+
+	/** - If the user terminated the line, call the command line handler */
+	/** @todo move this callback into the CLI handler (or somewhere more appropriate */
+	if ( 0 == strcmp((char*)&xUserInputBuffer[xubUserInputBufferIdx-1], "\r") )
+	{
+		/* Remove the last character */
+		xUserInputBuffer[xubUserInputBufferIdx - 1] = 0u;
+
+		/* Call the driver with our buffer of data for it to handle */
+		gvCLD_Invoke_The_Handler_For_This_Command((char *)xUserInputBuffer, MAX_USER_INPUT_BYTES);
+
+		/* reset buffer and index */
+		memset(&xUserInputBuffer, 0, MAX_USER_INPUT_BYTES);
+		xubUserInputBufferIdx = 0u;
+	}
+
+	/** - If too many characters were entered, reset */
+	if ( xubUserInputBufferIdx >= MAX_USER_INPUT_BYTES )
+	{
+		memset(&xUserInputBuffer, 0, MAX_USER_INPUT_BYTES);
+		xubUserInputBufferIdx = 0u;
+	}
+
+	/** - RX the next byte */
+	UARTDRV_Receive(xDebugUartHandle, &xUserInputBuffer[xubUserInputBufferIdx], MAX_UART_RECEIVE_SIZE, xvUartRxCb);
+}

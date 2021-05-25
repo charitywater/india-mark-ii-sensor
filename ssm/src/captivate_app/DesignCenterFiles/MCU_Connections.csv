@@ -1,0 +1,9 @@
+Sensor, Electrode, MCU Pin, Package Pin
+WaterPads,RX00,CAP0.0,12
+WaterPads,RX03,CAP0.1,13
+WaterPads,RX06,CAP0.3,15
+WaterPads,RX02,CAP2.0,21
+WaterPads,RX04,CAP2.1,22
+WaterPads,RX01,CAP2.3,24
+WaterPads,RX07,CAP3.1,26
+WaterPads,RX05,CAP3.3,28

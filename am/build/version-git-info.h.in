@@ -1,0 +1,29 @@
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~
+// FILE:
+//     git-version-info.h
+//
+// !!! DO NOT EDIT !!!
+// Header file automatically generated via CMake configure_file().
+// This header file contains version information collected from git.
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~
+
+#ifndef GIT_VERSION_INFO_H
+#define GIT_VERSION_INFO_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+#define GIT_BRANCH_NAME      "@GIT_BRANCH_NAME@"
+#define GIT_COMMIT_HASH      "@GIT_COMMIT_HASH@"
+
+// Standard ISO 8601 time-string
+#define BUILD_TIMESTAMP_UTC  "@BUILD_TIMESTAMP_UTC@"
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

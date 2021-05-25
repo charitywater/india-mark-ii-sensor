@@ -1,0 +1,14 @@
+/Debug/
+/Release/
+/Debug__opt_for_speed__0/
+/Debug__opt_for_speed__1/
+/Debug__opt_for_speed__2/
+/Debug__opt_for_speed__3/
+/Debug__opt_for_speed__4/
+*.d_raw
+TI*
+*.obj
+*.d
+*.rl
+*.pp
+

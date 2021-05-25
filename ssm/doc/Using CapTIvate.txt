@@ -1,0 +1,22 @@
+To make changes:
+1. Launch CapTIvate Design Center. 
+2. Open SSM project under <project root>\ssm\CapTIvateDesignCenter_1_80_00_30.
+3. Make changes.
+4. Save project.
+5. Open MSP 430 widget.  
+6. Click "Generate Source code"
+7. Select "Update existing project"
+8. Navigate to <project root>\ssm\SSM.
+9. Click OK.
+10. Launch CCS.
+11. Click debug button to build and program.
+12. Click play button to run.
+
+To stream data:
+1. Launch CapTIvate Design Center. 
+2. Open SSM project under <project root>\ssm\CapTIvateDesignCenter_1_80_00_30.
+3. Communications->Connect
+4. Double click "WaterPads" widget.
+5. Observe "Channel Bar Chart" and "Channel Oscilloscope Plot" tabs.
+6. Change configs at runtime under "Conversion Control" and "Tuning" tabs, hit apply. (no software update needed)
+

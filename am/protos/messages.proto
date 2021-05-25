@@ -1,0 +1,94 @@
+/**************************************************************************************************
+* \file     messages.proto
+* \brief    Cloud message definitions
+*
+* \par      Copyright Notice
+*           Copyright(C) 2021 by charity: water
+*           
+*           All rights reserved. No part of this software may be disclosed or
+*           distributed in any form or by any means without the prior written
+*           consent of charity: water.
+* \date     2/1/2021
+* \author   Twisthink
+*
+***************************************************************************************************/
+syntax = "proto2";
+
+import "nanopb.proto";
+
+enum eState {
+    ACTIVATED = 0;
+    DEACTIVATED = 1;
+    FAULT = 2;
+}
+
+/**************************************************************************************
+ *
+ *  Following messages define messages from DEVICE to CLOUD
+ *
+ **************************************************************************************/
+
+// Common message header for messages sent by device
+message CommonHeader {
+    required uint32 productId = 1;         // Always 4 for IM2
+    required uint32 timestamp = 2;         // Current timestamp
+    required uint32 msgNumber = 3;		   // Start at 1 and increment
+    required uint32 fwMajor = 4;           // Major firmware version #
+    required uint32 fwMinor = 5;           // Minor firmware version #
+    required uint32 fwBuild = 6;           // Build firmware version #
+    optional uint32 voltage = 7;           // Current battery voltage
+    optional uint32 powerRemaining = 8;    // % Power remaining of battery
+    optional eState state = 9;             // Current state of device
+    optional uint32 activatedDate = 10;    // Timestamp of activation
+    optional bool magnetDetected = 11;     // Indicates if magnet is installed or not
+    optional uint32 errorBits = 12;	       // Each bit indicates a separate error
+    optional uint32 numSSMResets = 13;     // The number of SSM resets
+    optional uint32 lastSSMResetDate = 14; // Date and time of last SSM reset
+    optional uint32 numAMResets = 15;	   // The number of AM watchdog resets
+    optional uint32 lastAMResetDate = 16;  // Date and time of the last AM watchdog reset
+    optional string logs = 17 [(nanopb).max_size = 100];   // Optional error log
+    optional uint32 rssi = 18;             // Strength of cell connection
+    optional uint32 connectTime = 19;      // Time to get a cell connection
+    optional bool mfgComplete = 20;        // Indicates mfg testing complete
+    required uint64 imei = 21;             // The IMEI for device
+}
+
+// Status Message
+message StatusMessage {
+    required CommonHeader header = 1;
+}
+
+// GPS Message
+message GpsMessage {
+    required CommonHeader header = 1;
+    optional uint32 hours = 2;
+    optional uint32 minutes = 3;
+    optional float latitude = 4;
+    optional float longitude = 5;
+    optional float altitude = 6;
+    optional uint32 fixQuality = 7;
+    optional uint32 satellitesTracked = 8;
+    optional float hdopValue = 9;
+    optional uint32 measurementTime = 10;
+}
+
+// Sensor Data Message
+message SensorDataMessage {
+    required CommonHeader header = 1;
+    repeated uint32 litersPerHour = 2 [(nanopb).max_count = 24];   // Repeat 24 times, 1 for each hour
+    repeated uint32 tempPerHour = 3 [(nanopb).max_count = 24];   // Repeat 24 times, 1 for each hour
+    repeated uint32 humidityPerHour = 4 [(nanopb).max_count = 24]; // Repeat 24 times, 1 for each hour
+    repeated uint32 strokesPerHour = 5 [(nanopb).max_count = 24];  // Repeat 24 times, 1 for each hour
+    repeated uint32 strokeHeightPerHour = 6 [(nanopb).max_count = 24];  // Repeat 24 times, 1 for each hour
+    optional uint32 dailyLiters = 7;
+    optional uint32 avgLiters = 8;
+    optional uint32 totalLiters = 9;
+    optional bool breakdown = 10;
+    optional uint32 pumpCapacity = 11;
+    optional uint32 pumpUsage = 12;
+    optional uint32 dryStrokes = 13;
+    optional uint32 dryStrokeHeight = 14;
+    optional uint32 pumpUnusedTime = 15;
+}
+
+

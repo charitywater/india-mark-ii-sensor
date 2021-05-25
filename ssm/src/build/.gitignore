@@ -1,0 +1,6 @@
+version-git-info.h
+src_linkInfo.xml
+*.out
+*.map
+*.txt
+

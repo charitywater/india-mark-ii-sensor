@@ -1,0 +1,9 @@
+/CMakeFiles/
+version-git-info.h
+*.bin
+*.elf
+*.hex
+Makefile
+output.map
+CMakeCache.txt
+cmake_install.cmake
