@@ -52,6 +52,11 @@ I2C_Err_t I2C_Init(void)
     return I2C_SUCCESS;
 }
 
+void I2C_DeInit(void)
+{
+    HAL_I2C_DeInit(&hi2c2);
+}
+
 I2C_Err_t I2C_sendIsDeviceReady(I2C_Device_t device, uint16_t timeout, uint8_t tries)
 {
     HAL_StatusTypeDef halResult = HAL_OK;

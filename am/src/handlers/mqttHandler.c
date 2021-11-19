@@ -67,7 +67,7 @@
 #define PUBLISH_RETRY_LIMIT                      ( 10 )
 #define PUBLISH_RETRY_MS                         ( 1000 )
 
-#define MAX_MSG_SIZE                             400
+#define MAX_MSG_SIZE                            (SensorDataMessage_size)
 #define MAX_DUID_BYTE_LEN                        30
 #define MAX_TOPIC_LEN                            80
 #define MAX_JOB_TYPE_LEN                         100
@@ -242,6 +242,7 @@ static const char *xJobStatusToString(awsJobStatus_t status);
 static const char *xRequestTypeToString(jobRequestType_t jobRequest);
 static jobRequestType_t xStringToRequestType(const char * requestTypeStr);
 static void xSetTxOperationIp(bool inProgress);
+static inline void xCleanupTopicBuffer(void);
 
 
 int MQTT_init( bool awsIotMqttMode,
@@ -493,7 +494,7 @@ bool MQTT_sendStatusMsg(StatusMessage statusToSend)
     IotMqttPublishInfo_t publishInfo = IOT_MQTT_PUBLISH_INFO_INITIALIZER;
     mqttMsg_t msg;
 
-    memset(&payloadBufferOutgoingTopic, 0, MAX_MSG_SIZE);
+    xCleanupTopicBuffer();
 
     //encode the status payload per our mqtt protocol
     lenEncoded = xEncodeStatusMessagePayload(statusToSend, payloadBufferOutgoingTopic, MAX_MSG_SIZE);
@@ -508,7 +509,7 @@ bool MQTT_sendStatusMsg(StatusMessage statusToSend)
         publishInfo.topicNameLength = strlen(pTopicStrings[0]);
 
         //fill in the payload with the protobuf
-        publishInfo.pPayload = &payloadBufferOutgoingTopic;
+        publishInfo.pPayload = payloadBufferOutgoingTopic;
         publishInfo.payloadLength = lenEncoded;
         publishInfo.retryMs = PUBLISH_RETRY_MS;
         publishInfo.retryLimit = PUBLISH_RETRY_LIMIT;
@@ -532,7 +533,7 @@ bool MQTT_sendGpsMsg(GpsMessage gpsMsgToSend)
     IotMqttPublishInfo_t publishInfo = IOT_MQTT_PUBLISH_INFO_INITIALIZER;
     mqttMsg_t msg;
 
-    memset(&payloadBufferOutgoingTopic, 0, MAX_MSG_SIZE);
+    xCleanupTopicBuffer();
 
     //encode the status payload per our mqtt protocol
     lenEncoded = xEncodeGpsMessagePayload(gpsMsgToSend, payloadBufferOutgoingTopic, MAX_MSG_SIZE);
@@ -547,7 +548,7 @@ bool MQTT_sendGpsMsg(GpsMessage gpsMsgToSend)
         publishInfo.topicNameLength = strlen(pTopicStrings[1]);
 
         //fill in the payload with the protobuf
-        publishInfo.pPayload = &payloadBufferOutgoingTopic;
+        publishInfo.pPayload = payloadBufferOutgoingTopic;
         publishInfo.payloadLength = lenEncoded;
         publishInfo.retryMs = PUBLISH_RETRY_MS;
         publishInfo.retryLimit = PUBLISH_RETRY_LIMIT;
@@ -572,7 +573,7 @@ bool MQTT_sendSensorDataMsg(SensorDataMessage sensorDataMessageToSend)
     IotMqttPublishInfo_t publishInfo = IOT_MQTT_PUBLISH_INFO_INITIALIZER;
     mqttMsg_t msg;
 
-    memset(&payloadBufferOutgoingTopic, 0, MAX_MSG_SIZE);
+    xCleanupTopicBuffer();
 
     //encode the sensor data payload per our mqtt protocol
     lenEncoded = xEncodeSensorDataMessagePayload(sensorDataMessageToSend, payloadBufferOutgoingTopic, MAX_MSG_SIZE);
@@ -587,7 +588,7 @@ bool MQTT_sendSensorDataMsg(SensorDataMessage sensorDataMessageToSend)
         publishInfo.topicNameLength = strlen(pTopicStrings[2]);
 
         //fill in the payload with the protobuf
-        publishInfo.pPayload = &payloadBufferOutgoingTopic;
+        publishInfo.pPayload = payloadBufferOutgoingTopic;
         publishInfo.payloadLength = lenEncoded;
         publishInfo.retryMs = PUBLISH_RETRY_MS;
         publishInfo.retryLimit = PUBLISH_RETRY_LIMIT;
@@ -1613,3 +1614,7 @@ static jobRequestType_t xStringToRequestType(const char * requestTypeStr)
     }
 }
 
+static inline void xCleanupTopicBuffer(void)
+{
+    memset(payloadBufferOutgoingTopic, 0, MAX_MSG_SIZE);
+}

@@ -26,6 +26,9 @@
 #include "stdbool.h"
 #include "logTypes.h"
 #include "CLI.h"
+#include "uart.h"
+#include "i2c.h"
+#include "spi.h"
 #include "stm32l4xx_hal.h"
 #include "pwrMgr.h"
 
@@ -107,6 +110,48 @@ void PWR_enterStandbyMode(void)
         - Re-enable all used wakeup sources,
         - Enter the Standby mode.
      */
+
+    //Deinitialize I2C, UART, SPI
+    UART_deinitDebugPeripherals();
+    I2C_DeInit();
+    SPI_DeInit();
+
+    //de-init FLASH output pins and set to high z (they have external pulls ups)
+    HAL_GPIO_DeInit(GPIOE, GPIO_PIN_9);
+    HAL_GPIO_DeInit(GPIOE, GPIO_PIN_10);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4);
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_10 |GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    //Enable pull DOWNS in sleep mode for pins that are inputs
+    //on other devices
+
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_A, GPIO_PIN_5);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_A, GPIO_PIN_6);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_A, GPIO_PIN_7);
+
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_B, GPIO_PIN_13);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_B, GPIO_PIN_15);
+
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_E, GPIO_PIN_7);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_A, GPIO_PIN_0);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_C, GPIO_PIN_12);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_D, GPIO_PIN_2);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_B, GPIO_PIN_5);
+    HAL_PWREx_EnableGPIOPullDown(PWR_GPIO_B, GPIO_PIN_4);
+
+    HAL_PWREx_EnablePullUpPullDownConfig();
 
     /* Enable Power Clock */
     __HAL_RCC_PWR_CLK_ENABLE();
@@ -192,11 +237,13 @@ bool PWR_getCellPwrState(void)
     return isCellModemPowered;
 }
 
+
 static void commandHandlerForPwr(int argc, char **argv)
 {
     if ( argc == ONE_ARGUMENT && 0 == strcmp(argv[FIRST_ARG_IDX], "sleep") )
     {
         elogInfo("Putting AM to sleep...");
+
         PWR_enterStandbyMode();
     }
     else if ( argc == TWO_ARGUMENTS && 0 == strcmp(argv[FIRST_ARG_IDX], "gps") )

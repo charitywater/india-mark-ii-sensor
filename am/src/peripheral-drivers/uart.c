@@ -119,6 +119,7 @@ void UART_deinitDebugPeripherals(void)
     //deinit these uart peripherals before going to sleep
     HAL_UART_DeInit(&hlpuart1);
     HAL_UART_DeInit(&huart1);
+    HAL_UART_DeInit(&huart4);
 }
 
 void UART_initCellUart(void)

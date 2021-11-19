@@ -179,6 +179,9 @@ void APP_ALGO_setStrokeDetectionIsOn(bool algIsOn)
     else
     {
         HW_TERM_Print("disabling stroke detection");
+
+        //reset nest state
+        state = WATERPAD_PROCESSING;
     }
 }
 

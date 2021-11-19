@@ -63,6 +63,12 @@ static bool WaitForSSMReady(uint16_t max_wait_ms);
     xSPITransferMutex = xSemaphoreCreateMutex();
 }
 
+void SPI_DeInit(void)
+{
+    HAL_SPI_DeInit(&hspi2);
+    HAL_SPI_DeInit(&hspi1);
+}
+
 /*******************************************************************************
 Send data to the NAND flash chip over spi. Also receivev data is an rx len and
 buffer is provided.

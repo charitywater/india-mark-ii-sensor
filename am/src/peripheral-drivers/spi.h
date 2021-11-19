@@ -67,4 +67,6 @@ extern spiStatus_t SPI_ssmTransfer(const spiData_t* pDataToSend, spiData_t* pDat
 
 extern void SPI_Init(void);
 
+extern void SPI_DeInit(void);
+
 #endif /* PERIPHERAL_DRIVERS_SPI_H_ */

@@ -41,7 +41,6 @@
 #include "nwStackFunctionality.h"
 #include "otaUpdate.h"
 #include "updateSsmFw.h"
-#include "uart.h"
 #include "externalWatchdog.h"
 #include "gpsManager.h"
 #include <eventManager.h>
@@ -1535,9 +1534,6 @@ static void xTurnOffCellAndPowerDown(void)
 
     if ( xTestMode == false )
     {
-        //disable logging UART
-        UART_deinitDebugPeripherals();
-
         //Now enter standby mode - Wake up from the SSM GPIO line
         elogInfo("Entering Standby Mode");
         PWR_enterStandbyMode();

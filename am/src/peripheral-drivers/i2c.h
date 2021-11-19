@@ -48,5 +48,5 @@ extern I2C_Err_t I2C_writeToMemAddr(I2C_Device_t device, uint16_t memAddress, ui
 extern I2C_Err_t I2C_readFromMemAddr(I2C_Device_t device, uint16_t memAddress, uint16_t memSize, uint8_t *pReadBuffer, uint16_t readByteLen);
 extern I2C_Err_t I2C_receive(I2C_Device_t device, uint8_t *buf, uint16_t memSize, uint16_t timeout);
 extern I2C_Err_t I2C_transmit(I2C_Device_t device, uint8_t *buf, uint16_t memSize, uint16_t timeout);
-
+extern void I2C_DeInit(void);
 #endif /* PERIPHERAL_DRIVERS_I2C_H_ */
