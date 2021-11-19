@@ -6,15 +6,8 @@ The software in this repository was developed and designed for the India Mark II
 
 - **am**: This folder contains the code for the application micro, which is the STM32.
 - **ssm**: This folder contains the code for the sensor support micro, which is the MSP430 from TI.
-- **ci**: This folder contains all testing files and developer scripts.
 - **shared**: This folder contains code that is shared between the SSM and the AM.  Specifically, the code that is used for the micros to talk to each other over the SPI interface.
 - **amBootloader**: This folder contains the AM bootloader source code.
 
-## CI/CD Variables
-
-For CI/CD, the following variables can be used/set when kicking off a pipeline:
-
-- **AWS_CERT**: the AWS certification header file.
-- **DEPLOY**: true/false.  Default set to false.  If true, will run FOTA job and load bootloader.
  
 
