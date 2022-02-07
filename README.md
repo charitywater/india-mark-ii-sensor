@@ -4,10 +4,14 @@ The software in this repository was developed and designed for the India Mark II
 
 ## Directory Structure
 
-- **am**: This folder contains the code for the application micro, which is the STM32.
-- **ssm**: This folder contains the code for the sensor support micro, which is the MSP430 from TI.
-- **shared**: This folder contains code that is shared between the SSM and the AM.  Specifically, the code that is used for the micros to talk to each other over the SPI interface.
-- **amBootloader**: This folder contains the AM bootloader source code.
+- **Firmware**: The firmware for the India Mark II sensor
+    - **am**: This folder contains the code for the application micro, which is the STM32.
+    - **ssm**: This folder contains the code for the sensor support micro, which is the MSP430 from TI.
+    - **shared**: This folder contains code that is shared between the SSM and the AM.  Specifically, the code that is used for the micros to talk to each other over the SPI interface.
+    - **amBootloader**: This folder contains the AM bootloader source code.
+- **Mechanical**: Mechanical drawings for the India Mark II sensor
+- **Electrical**: Electrical drawings for teh India Mark II sensor
+
 
  
 
