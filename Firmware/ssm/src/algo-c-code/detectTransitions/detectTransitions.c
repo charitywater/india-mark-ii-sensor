@@ -2,7 +2,7 @@
  * File: detectTransitions.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 12:00:09
+ * C/C++ source code generated on  : 27-Oct-2022 08:12:45
  */
 
 /* Include Files */
@@ -29,7 +29,7 @@
 /* Function Declarations */
 static ReasonCodes addTransition(TransitionType b_type, int16_T b_val, int16_T
   b_idx, strokeTransitionBuffer_t *transitions);
-static int16_T combineAxes(uint16_T b_idx, const int16_T
+static int16_T applyCalibrationAndCombineAxes(uint16_T b_idx, const int16_T
   mag_windows_blockA_x_lsb[20], const int16_T mag_windows_blockA_y_lsb[20],
   const int16_T mag_windows_blockA_z_lsb[20], const int16_T
   mag_windows_blockB_x_lsb[20], const int16_T mag_windows_blockB_y_lsb[20],
@@ -103,7 +103,7 @@ static ReasonCodes addTransition(TransitionType b_type, int16_T b_val, int16_T
  *                int16_T mag_calib_z_offset
  * Return Type  : int16_T
  */
-static int16_T combineAxes(uint16_T b_idx, const int16_T
+static int16_T applyCalibrationAndCombineAxes(uint16_T b_idx, const int16_T
   mag_windows_blockA_x_lsb[20], const int16_T mag_windows_blockA_y_lsb[20],
   const int16_T mag_windows_blockA_z_lsb[20], const int16_T
   mag_windows_blockB_x_lsb[20], const int16_T mag_windows_blockB_y_lsb[20],
@@ -228,16 +228,16 @@ ReasonCodes detectTransitions(const magWindows_t *mag_windows, const
     /*  Determine the starting index into the window */
     if (state_info->is_first != 0) {
       start_idx = 2;
-      state_info->prev_val = combineAxes(1U, mag_windows->blockA.x_lsb,
-        mag_windows->blockA.y_lsb, mag_windows->blockA.z_lsb,
-        mag_windows->blockB.x_lsb, mag_windows->blockB.y_lsb,
-        mag_windows->blockB.z_lsb, mag_windows->blockOA.x_lsb,
-        mag_windows->blockOA.y_lsb, mag_windows->blockOA.z_lsb,
-        mag_windows->blockOB.x_lsb, mag_windows->blockOB.y_lsb,
-        mag_windows->blockOB.z_lsb, mag_windows->read_window,
-        mag_calib->x_orientation, mag_calib->y_orientation,
-        mag_calib->z_orientation, mag_calib->x_offset, mag_calib->y_offset,
-        mag_calib->z_offset);
+      state_info->prev_val = applyCalibrationAndCombineAxes(1U,
+        mag_windows->blockA.x_lsb, mag_windows->blockA.y_lsb,
+        mag_windows->blockA.z_lsb, mag_windows->blockB.x_lsb,
+        mag_windows->blockB.y_lsb, mag_windows->blockB.z_lsb,
+        mag_windows->blockOA.x_lsb, mag_windows->blockOA.y_lsb,
+        mag_windows->blockOA.z_lsb, mag_windows->blockOB.x_lsb,
+        mag_windows->blockOB.y_lsb, mag_windows->blockOB.z_lsb,
+        mag_windows->read_window, mag_calib->x_orientation,
+        mag_calib->y_orientation, mag_calib->z_orientation, mag_calib->x_offset,
+        mag_calib->y_offset, mag_calib->z_offset);
 
       /*  We are starting in a NoActivity state on the first pass - log a */
       /*  no_activity transition */
@@ -248,16 +248,16 @@ ReasonCodes detectTransitions(const magWindows_t *mag_windows, const
 
     /*  Loop through the window looking for stroke transitions */
     for (i = start_idx; i < 121; i++) {
-      curr_val = combineAxes((uint16_T)i, mag_windows->blockA.x_lsb,
-        mag_windows->blockA.y_lsb, mag_windows->blockA.z_lsb,
-        mag_windows->blockB.x_lsb, mag_windows->blockB.y_lsb,
-        mag_windows->blockB.z_lsb, mag_windows->blockOA.x_lsb,
-        mag_windows->blockOA.y_lsb, mag_windows->blockOA.z_lsb,
-        mag_windows->blockOB.x_lsb, mag_windows->blockOB.y_lsb,
-        mag_windows->blockOB.z_lsb, mag_windows->read_window,
-        mag_calib->x_orientation, mag_calib->y_orientation,
-        mag_calib->z_orientation, mag_calib->x_offset, mag_calib->y_offset,
-        mag_calib->z_offset);
+      curr_val = applyCalibrationAndCombineAxes((uint16_T)i,
+        mag_windows->blockA.x_lsb, mag_windows->blockA.y_lsb,
+        mag_windows->blockA.z_lsb, mag_windows->blockB.x_lsb,
+        mag_windows->blockB.y_lsb, mag_windows->blockB.z_lsb,
+        mag_windows->blockOA.x_lsb, mag_windows->blockOA.y_lsb,
+        mag_windows->blockOA.z_lsb, mag_windows->blockOB.x_lsb,
+        mag_windows->blockOB.y_lsb, mag_windows->blockOB.z_lsb,
+        mag_windows->read_window, mag_calib->x_orientation,
+        mag_calib->y_orientation, mag_calib->z_orientation, mag_calib->x_offset,
+        mag_calib->y_offset, mag_calib->z_offset);
       switch (state_info->state) {
        case no_activity:
         state_info->state_switch_cnt = 0U;

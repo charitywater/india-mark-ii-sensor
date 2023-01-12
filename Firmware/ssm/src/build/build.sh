@@ -160,6 +160,7 @@ FILES=( "../APP/APP" \
         "../../../shared/asp/ssm-spi-protocol" \
         "../algo-c-code/calculateWaterVolume/addToAverage" \
         "../algo-c-code/calculateWaterVolume/calculateWaterVolume" \
+        "../algo-c-code/calculateWaterVolume/promotePadStates" \
         "../algo-c-code/calculateWaterVolume/checkWaterCalibration" \
         "../algo-c-code/calculateWaterVolume/detectWaterChange" \
         "../algo-c-code/calculateWaterVolume/waterCalibration" \

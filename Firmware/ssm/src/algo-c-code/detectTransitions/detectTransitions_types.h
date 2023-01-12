@@ -2,7 +2,7 @@
  * File: detectTransitions_types.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 12:00:09
+ * C/C++ source code generated on  : 27-Oct-2022 08:12:45
  */
 
 #ifndef DETECTTRANSITIONS_TYPES_H
@@ -45,8 +45,8 @@ typedef uint8_T ReasonCodes;
 #define water_calib_neg_delta          ((ReasonCodes)3U)
 #define water_bad_sample               ((ReasonCodes)10U)
 #define water_flow_standing_water      ((ReasonCodes)11U)
-#define water_flow_clogged_pump        ((ReasonCodes)12U)
-#define water_volume_capped            ((ReasonCodes)13U)
+#define mag_calib_xy_cnt_low           ((ReasonCodes)12U)
+#define mag_calib_xz_cnt_low           ((ReasonCodes)13U)
 #define mag_calib_magnet_present       ((ReasonCodes)20U)
 #define c_mag_calib_orientation_calibra ((ReasonCodes)21U)
 #define mag_calib_offset_calibrated    ((ReasonCodes)22U)
@@ -54,7 +54,7 @@ typedef uint8_T ReasonCodes;
 #define mag_calib_orientation_reset    ((ReasonCodes)24U)
 #define mag_calib_major_change_reset   ((ReasonCodes)25U)
 #define mag_calib_new_offset_value_l1  ((ReasonCodes)26U)
-#define mag_calib_new_offset_value_l2  ((ReasonCodes)27U)
+#define mag_calib_bad_placement_wobble ((ReasonCodes)27U)
 #define stroke_trans_buffer_overflow   ((ReasonCodes)30U)
 #define stroke_buffer_overflow         ((ReasonCodes)31U)
 #endif                                 /*ReasonCodes_constants*/
@@ -155,12 +155,13 @@ typedef struct {
   uint16_T mag_pres_pos_win_cnt;
   uint16_T mag_pres_neg_win_cnt;
   uint16_T orient_win_cnt;
-  uint16_T orient_xy_sync_window_cnt;
-  uint16_T orient_xy_nosync_window_cnt;
-  uint16_T orient_xz_sync_window_cnt;
-  uint16_T orient_xz_nosync_window_cnt;
+  uint16_T orient_reset_cnt;
+  uint16_T orient_cal_reset_cnt;
+  uint32_T orient_xy_sync_window_cnt;
+  uint32_T orient_xy_nosync_window_cnt;
+  uint32_T orient_xz_sync_window_cnt;
+  uint32_T orient_xz_nosync_window_cnt;
   uint16_T offset_win_cnt;
-  uint8_T offset_major_change;
   int32_T offset_new_value_diff;
   int16_T x_max_val;
   int16_T x_min_val;

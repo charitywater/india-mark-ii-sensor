@@ -42,11 +42,11 @@ extern tElement WaterPads_E05;
 extern tElement WaterPads_E06;
 extern tElement WaterPads_E07;
 
-static const char * Pads[]={"1","2","3","4","5","6","7","8"};
+//static const char * Pads[]={"1","2","3","4","5","6","7","8"};
 
-uint8_t APP_WTR_CheckLevel(void);
+//uint8_t APP_WTR_CheckLevel(void);
 uint16_t APP_WTR_GetPadValue(APP_WTR_PAD_CHANNELS_T pad);
-const char * APP_WTR_GetStrForPad(APP_WTR_PAD_CHANNELS_T pos);
+//const char * APP_WTR_GetStrForPad(APP_WTR_PAD_CHANNELS_T pos);
 
 #ifdef ENGINEERING_DATA
 
@@ -145,46 +145,46 @@ void APP_WTR_CollectData(uint32_t ticks)
 #endif // ENGINEERING_DATA
 
 // Get the string name for the pad.
-const char * APP_WTR_GetStrForPad(APP_WTR_PAD_CHANNELS_T pos)
-{
-    return Pads[pos];
-}
+//const char * APP_WTR_GetStrForPad(APP_WTR_PAD_CHANNELS_T pos)
+//{
+//    return Pads[pos];
+//}
 
-// Start at the lowest pad and see how high the water level is
-uint8_t APP_WTR_CheckLevel(void)
-{
-    uint8_t level = 0;
-
-    if(WaterPads.bSensorTouch == true)
-    {
-        if (WaterPads_E00.bTouch == true) level++;
-        else return level;
-
-        if (WaterPads_E02.bTouch == true) level++;
-        else return level;
-
-        if (WaterPads_E03.bTouch == true) level++;
-        else return level;
-
-        if (WaterPads_E04.bTouch == true) level++;
-        else return level;
-
-        if (WaterPads_E07.bTouch == true) level++;
-        else return level;
-
-        if (WaterPads_E01.bTouch == true) level++;
-
-        else return level;
-
-        if (WaterPads_E05.bTouch == true) level++;
-        else return level;
-
-        if (WaterPads_E06.bTouch == true) level++;
-        else return level;
-    }
-
-    return level;
-}
+//// Start at the lowest pad and see how high the water level is
+//uint8_t APP_WTR_CheckLevel(void)
+//{
+//    uint8_t level = 0;
+//
+//    if(WaterPads.bSensorTouch == true)
+//    {
+//        if (WaterPads_E00.bTouch == true) level++;
+//        else return level;
+//
+//        if (WaterPads_E02.bTouch == true) level++;
+//        else return level;
+//
+//        if (WaterPads_E03.bTouch == true) level++;
+//        else return level;
+//
+//        if (WaterPads_E04.bTouch == true) level++;
+//        else return level;
+//
+//        if (WaterPads_E07.bTouch == true) level++;
+//        else return level;
+//
+//        if (WaterPads_E01.bTouch == true) level++;
+//
+//        else return level;
+//
+//        if (WaterPads_E05.bTouch == true) level++;
+//        else return level;
+//
+//        if (WaterPads_E06.bTouch == true) level++;
+//        else return level;
+//    }
+//
+//    return level;
+//}
 
 // Get the raw counts on the pad.
 uint16_t APP_WTR_GetPadValue(APP_WTR_PAD_CHANNELS_T pad)

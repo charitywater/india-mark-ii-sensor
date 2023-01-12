@@ -2,7 +2,7 @@
  * File: magnetometerCalibration.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:59:40
+ * C/C++ source code generated on  : 27-Oct-2022 08:12:08
  */
 
 /* Include Files */
@@ -195,12 +195,13 @@ static void reset_calibration(magCalibration_t *mag_calib)
   mag_calib->window_calib.mag_pres_neg_win_cnt = 0U;
   mag_calib->window_calib.mag_pres_win_cnt = 0U;
   mag_calib->window_calib.orient_win_cnt = 0U;
-  mag_calib->window_calib.orient_xy_sync_window_cnt = 0U;
-  mag_calib->window_calib.orient_xy_nosync_window_cnt = 0U;
-  mag_calib->window_calib.orient_xz_sync_window_cnt = 0U;
-  mag_calib->window_calib.orient_xz_nosync_window_cnt = 0U;
+  mag_calib->window_calib.orient_reset_cnt = 0U;
+  mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+  mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+  mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+  mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+  mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
   mag_calib->window_calib.offset_win_cnt = 0U;
-  mag_calib->window_calib.offset_major_change = 0U;
   mag_calib->window_calib.offset_new_value_diff = 0L;
   mag_calib->window_calib.x_max_val = MIN_int16_T;
   mag_calib->window_calib.x_min_val = MAX_int16_T;
@@ -345,16 +346,21 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
   int16_T y_min;
   int16_T z_max;
   int16_T z_min;
-  uint8_T xy_sync_cnt;
-  uint8_T xy_nosync_cnt;
-  uint8_T xz_sync_cnt;
-  uint8_T xz_nosync_cnt;
+  uint32_T xy_sync_cnt;
+  uint32_T xy_nosync_cnt;
+  uint32_T xz_sync_cnt;
+  uint32_T xz_nosync_cnt;
   int16_T i;
   int16_T b_i;
   int16_T e_idx;
+  int16_T x;
+  int16_T b_x;
   uint8_T buff_idx;
+  int16_T c_x;
   uint8_T err;
+  uint8_T axis_cnt;
   int16_T win_idx;
+  int16_T d_x;
   uint8_T read_success;
   magSample_t samp;
   int16_T x_win[3];
@@ -367,18 +373,8 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
   int16_T z_win[3];
   PeakType z_peak_type;
   int16_T z_val;
-  int16_T x;
-  int16_T b_x;
-  int16_T c_x;
-  uint8_T axis_cnt;
-  int16_T d_x;
   int16_T e_x;
   int16_T f_x;
-  boolean_T guard1 = false;
-  Orientation b_y_orientation;
-  Orientation b_mag_calib;
-  Orientation c_mag_calib;
-  Orientation d_mag_calib;
   int32_T g_x;
   int32_T h_x;
   uint16_T d;
@@ -386,6 +382,18 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
   int32_T j_x;
   int32_T k_x;
   int32_T l_x;
+  uint32_T total_xy_cnt;
+  uint32_T total_xz_cnt;
+  uint32_T b_mag_calib;
+  uint32_T c_mag_calib;
+  boolean_T guard1 = false;
+  boolean_T guard2 = false;
+  uint32_T d_mag_calib;
+  uint32_T e_mag_calib;
+  Orientation b_y_orientation;
+  Orientation f_mag_calib;
+  Orientation g_mag_calib;
+  Orientation h_mag_calib;
 
   /*  MAGNETOMETERCALIBRATION Calibrates the magnetometer x, y, z axis so they can be */
   /*  combined into a single "vector" value */
@@ -403,6 +411,7 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
 
   /*  Track whether or not the calibration has changed during this window */
   if (water_data->present != 0) {
+    /*     %% Initialization */
     /*  For Debug */
     x_max = MIN_int16_T;
     x_min = MAX_int16_T;
@@ -410,18 +419,12 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
     y_min = MAX_int16_T;
     z_max = MIN_int16_T;
     z_min = MAX_int16_T;
-    xy_sync_cnt = 0U;
-    xy_nosync_cnt = 0U;
-    xz_sync_cnt = 0U;
-    xz_nosync_cnt = 0U;
+    xy_sync_cnt = 0UL;
+    xy_nosync_cnt = 0UL;
+    xz_sync_cnt = 0UL;
+    xz_nosync_cnt = 0UL;
 
-    /*      is_x = []; */
-    /*      is_y = []; */
-    /*      is_z = []; */
-    /*       */
-    /*      figure(1);  */
-    /*      clf(1); */
-    /*     %% Process Window */
+    /*     %% Process Window and Collect Stats */
     for (i = 0; i < 118; i++) {
       b_i = (int16_T)(i + 1U);
 
@@ -452,24 +455,12 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       }
 
       if (err == 0) {
-        /*             %% Slope Direction */
-        isPeakValley(x_win, 20, &x_peak_type, &x_val);
-        isPeakValley(y_win, 8, &y_peak_type, &y_val);
-        isPeakValley(z_win, 20, &z_peak_type, &z_val);
+        /*  Slope Direction */
+        isPeakValley(x_win, 10, &x_peak_type, &x_val);
+        isPeakValley(y_win, 6, &y_peak_type, &y_val);
+        isPeakValley(z_win, 10, &z_peak_type, &z_val);
 
-        /*              if x_peak_type ~= PeakType.no_peak */
-        /*                  is_x = [is_x; [double(e_idx), double(x_val)]]; */
-        /*              end */
-        /*              if y_peak_type ~= PeakType.no_peak */
-        /*                  is_y = [is_y; [double(e_idx), double(y_val)]]; */
-        /*              end */
-        /*              if z_peak_type ~= PeakType.no_peak */
-        /*                  is_z = [is_z; [double(e_idx), double(z_val)]]; */
-        /*              end */
-        /*               */
-        /*              hold on; plot(s_idx:e_idx, x_win); plot(s_idx:e_idx, y_win); plot(s_idx:e_idx, z_win); hold off */
-        /*             */
-        /*             %% Max and min tracking */
+        /*  Max and min tracking */
         if (x_val > x_max) {
           x_max = x_val;
         }
@@ -494,14 +485,14 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
           z_min = z_val;
         }
 
-        /*             %% Orientation tracking */
+        /*  Orientation tracking */
         if ((x_peak_type != no_peak) && (y_peak_type != no_peak)) {
           if (x_peak_type == y_peak_type) {
-            if (xy_sync_cnt < 255) {
+            if (xy_sync_cnt < MAX_uint32_T) {
               xy_sync_cnt++;
             }
           } else {
-            if (xy_nosync_cnt < 255) {
+            if (xy_nosync_cnt < MAX_uint32_T) {
               xy_nosync_cnt++;
             }
           }
@@ -509,11 +500,11 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
 
         if ((x_peak_type != no_peak) && (z_peak_type != no_peak)) {
           if (x_peak_type == z_peak_type) {
-            if (xz_sync_cnt < 255) {
+            if (xz_sync_cnt < MAX_uint32_T) {
               xz_sync_cnt++;
             }
           } else {
-            if (xz_nosync_cnt < 255) {
+            if (xz_nosync_cnt < MAX_uint32_T) {
               xz_nosync_cnt++;
             }
           }
@@ -521,18 +512,7 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       }
     }
 
-    /*      hold on;  */
-    /*      if ~isempty(is_x) */
-    /*          plot(is_x(:,1), is_x(:,2),'o');  */
-    /*      end */
-    /*      if ~isempty(is_y) */
-    /*          plot(is_y(:,1), is_y(:,2),'x');  */
-    /*      end */
-    /*      if ~isempty(is_z) */
-    /*          plot(is_z(:,1), is_z(:,2),'s');  */
-    /*      end */
-    /*      hold off */
-    /*     %% Magnet Present Decision Logic */
+    /*     %% Magnet Present Stats */
     if (mag_calib->window_calib.mag_pres_win_cnt < MAX_uint16_T) {
       mag_calib->window_calib.mag_pres_win_cnt++;
     }
@@ -547,7 +527,7 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       d_x = x;
     }
 
-    if (d_x >= 30) {
+    if (d_x >= 20) {
       axis_cnt = 1U;
     }
 
@@ -557,7 +537,7 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       e_x = b_x;
     }
 
-    if (e_x >= 30) {
+    if (e_x >= 20) {
       axis_cnt++;
     }
 
@@ -567,7 +547,7 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       f_x = c_x;
     }
 
-    if (f_x >= 30) {
+    if (f_x >= 20) {
       axis_cnt++;
     }
 
@@ -583,13 +563,9 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       }
     }
 
-    /*          disp(['X_Range: ',num2str(x_range)]) */
-    /*          disp(['Y_Range: ',num2str(y_range)]) */
-    /*          disp(['Z_Range: ',num2str(z_range)]) */
-    /*          disp(['Mag Pres Win Cnt: ',num2str(mag_calib.window_calib.mag_pres_win_cnt)]) */
-    /*          disp(['Mag Pres Pos Win Cnt: ',num2str(mag_calib.window_calib.mag_pres_pos_win_cnt)]) */
-    /*          disp(['Mag Pres Neg Win Cnt: ',num2str(mag_calib.window_calib.mag_pres_neg_win_cnt)]) */
+    /*     %% Magnet Calibration Logic */
     if (mag_calib->magnet_present == 0) {
+      /*  THIS IS MAGNET CALIBRATION STATE */
       if (mag_calib->window_calib.mag_pres_win_cnt > 212U) {
         /*  NOTE: The logic above ensures that the sum of */
         /*  pos_win_cnt and neg_win_cnt will be equal to */
@@ -608,6 +584,7 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
         mag_calib->window_calib.mag_pres_neg_win_cnt = 0U;
       }
     } else {
+      /*  THIS IS MAGNET PRESENT MONITORING */
       if (mag_calib->window_calib.mag_pres_win_cnt > 212U) {
         /*  NOTE: The logic above ensures that the sum of */
         /*  pos_win_cnt and neg_win_cnt will be equal to */
@@ -628,349 +605,440 @@ void magnetometerCalibration(const magWindows_t *mag_windows, magCalibration_t
       }
     }
 
+    /*     %% -- Magnet is now present */
     if (mag_calib->magnet_present != 0) {
-      /*         %% Orientation Calibration Decision Logic */
+      /*         %% Orientation Calibration Stats */
       if (mag_calib->window_calib.orient_win_cnt < MAX_uint16_T) {
         mag_calib->window_calib.orient_win_cnt++;
       }
 
-      /*  Must have enough samples in the window to determine */
-      /*  sync/non-sync */
-      if ((uint16_T)xy_sync_cnt + xy_nosync_cnt > 20U) {
-        if (xy_sync_cnt > xy_nosync_cnt) {
-          if (mag_calib->window_calib.orient_xy_sync_window_cnt < MAX_uint16_T)
-          {
-            mag_calib->window_calib.orient_xy_sync_window_cnt++;
-          }
-        } else {
-          if (mag_calib->window_calib.orient_xy_nosync_window_cnt < MAX_uint16_T)
-          {
-            mag_calib->window_calib.orient_xy_nosync_window_cnt++;
-          }
-        }
+      /*  Accumulate XY sync and non-sync counts */
+      if (mag_calib->window_calib.orient_xy_sync_window_cnt < MAX_uint32_T) {
+        mag_calib->window_calib.orient_xy_sync_window_cnt += xy_sync_cnt;
       }
 
-      /*  Must have enough samples in the window to determine */
-      /*  sync/non-sync */
-      if ((uint16_T)xz_sync_cnt + xz_nosync_cnt > 20U) {
-        if (xz_sync_cnt > xz_nosync_cnt) {
-          if (mag_calib->window_calib.orient_xz_sync_window_cnt < MAX_uint16_T)
-          {
-            mag_calib->window_calib.orient_xz_sync_window_cnt++;
-          }
-        } else {
-          if (mag_calib->window_calib.orient_xz_nosync_window_cnt < MAX_uint16_T)
-          {
-            mag_calib->window_calib.orient_xz_nosync_window_cnt++;
-          }
-        }
+      if (mag_calib->window_calib.orient_xy_nosync_window_cnt < MAX_uint32_T) {
+        mag_calib->window_calib.orient_xy_nosync_window_cnt += xy_nosync_cnt;
       }
 
-      /*          disp(['xy_sync_cnt: ', num2str(xy_sync_cnt)]) */
-      /*          disp(['xy_nosync_cnt: ', num2str(xy_nosync_cnt)]) */
-      /*          disp(['xz_sync_cnt: ', num2str(xz_sync_cnt)]) */
-      /*          disp(['xz_nosync_cnt: ', num2str(xz_nosync_cnt)]) */
-      /*   */
-      /*          disp(['Orient Win Cnt: ', num2str(mag_calib.window_calib.orient_win_cnt)]); */
-      /*          disp(['XY Sync Cnt: ', num2str(mag_calib.window_calib.orient_xy_sync_window_cnt)]); */
-      /*          disp(['XY NoSync Cnt: ', num2str(mag_calib.window_calib.orient_xy_nosync_window_cnt)]); */
-      /*          disp(['XZ Sync Cnt: ', num2str(mag_calib.window_calib.orient_xz_sync_window_cnt)]); */
-      /*          disp(['XZ NoSync Cnt: ', num2str(mag_calib.window_calib.orient_xz_nosync_window_cnt)]); */
-      if (mag_calib->orientation_calibrated == 0) {
-        if (mag_calib->window_calib.orient_win_cnt > 212U) {
-          /*  If we have enough windows of samples, determine the */
-          /*  orientation */
-          if (((int32_T)((uint32_T)
-                         mag_calib->window_calib.orient_xy_sync_window_cnt +
-                         mag_calib->window_calib.orient_xy_nosync_window_cnt) >
-               10L) && ((int32_T)((uint32_T)
-                                  mag_calib->window_calib.orient_xz_sync_window_cnt
-                + mag_calib->window_calib.orient_xz_nosync_window_cnt) > 10L)) {
-            if (mag_calib->window_calib.orient_xy_sync_window_cnt >
-                mag_calib->window_calib.orient_xy_nosync_window_cnt) {
-              b_y_orientation = positive;
-            } else {
-              b_y_orientation = negative;
-            }
-
-            /*  Note: X and Z must have the same orientation based on */
-            /*  the physics of the pump and magnet with normal */
-            /*  magnet placement */
-            if (mag_calib->window_calib.orient_xz_sync_window_cnt >
-                mag_calib->window_calib.orient_xz_nosync_window_cnt) {
-              d_mag_calib = positive;
-            } else {
-              d_mag_calib = negative;
-            }
-
-            if (positive == d_mag_calib) {
-              mag_calib->x_orientation = positive;
-              mag_calib->y_orientation = b_y_orientation;
-              mag_calib->z_orientation = positive;
-              mag_calib->orientation_calibrated = 1U;
-              add_reason_code(c_mag_calib_orientation_calibra, reason_codes);
-            } else {
-              /*  Should never happen */
-            }
-          }
-
-          /*  Start a new sampling period */
-          mag_calib->window_calib.orient_win_cnt = 0U;
-          mag_calib->window_calib.orient_xy_sync_window_cnt = 0U;
-          mag_calib->window_calib.orient_xy_nosync_window_cnt = 0U;
-          mag_calib->window_calib.orient_xz_sync_window_cnt = 0U;
-          mag_calib->window_calib.orient_xz_nosync_window_cnt = 0U;
-        }
-      } else {
-        if (mag_calib->window_calib.orient_win_cnt > 212U) {
-          /*  If we have enough windows of samples, determine the */
-          /*  orientation */
-          if (((int32_T)((uint32_T)
-                         mag_calib->window_calib.orient_xy_sync_window_cnt +
-                         mag_calib->window_calib.orient_xy_nosync_window_cnt) >
-               10L) && ((int32_T)((uint32_T)
-                                  mag_calib->window_calib.orient_xz_sync_window_cnt
-                + mag_calib->window_calib.orient_xz_nosync_window_cnt) > 10L)) {
-            guard1 = false;
-            if (positive != mag_calib->x_orientation) {
-              guard1 = true;
-            } else {
-              if (mag_calib->window_calib.orient_xy_sync_window_cnt >
-                  mag_calib->window_calib.orient_xy_nosync_window_cnt) {
-                b_mag_calib = positive;
-              } else {
-                b_mag_calib = negative;
-              }
-
-              if (b_mag_calib != mag_calib->y_orientation) {
-                guard1 = true;
-              } else {
-                if (mag_calib->window_calib.orient_xz_sync_window_cnt >
-                    mag_calib->window_calib.orient_xz_nosync_window_cnt) {
-                  c_mag_calib = positive;
-                } else {
-                  c_mag_calib = negative;
-                }
-
-                if (c_mag_calib != mag_calib->z_orientation) {
-                  guard1 = true;
-                }
-              }
-            }
-
-            if (guard1) {
-              /*  Reset the calibration */
-              reset_calibration(mag_calib);
-              add_reason_code(mag_calib_orientation_reset, reason_codes);
-
-              /*  For debug */
-            }
-          }
-
-          /*  Start a new sampling period */
-          mag_calib->window_calib.orient_win_cnt = 0U;
-          mag_calib->window_calib.orient_xy_sync_window_cnt = 0U;
-          mag_calib->window_calib.orient_xy_nosync_window_cnt = 0U;
-          mag_calib->window_calib.orient_xz_sync_window_cnt = 0U;
-          mag_calib->window_calib.orient_xz_nosync_window_cnt = 0U;
-        }
+      /*  Accumulate XZ sync and non-sync counts */
+      if (mag_calib->window_calib.orient_xz_sync_window_cnt < MAX_uint32_T) {
+        mag_calib->window_calib.orient_xz_sync_window_cnt += xz_sync_cnt;
       }
 
-      /*         %% Offset Calibration Decision Logic             */
+      if (mag_calib->window_calib.orient_xz_nosync_window_cnt < MAX_uint32_T) {
+        mag_calib->window_calib.orient_xz_nosync_window_cnt += xz_nosync_cnt;
+      }
+
+      /*         %% Offset Calibration Stats */
       if (mag_calib->window_calib.offset_win_cnt < MAX_uint16_T) {
         mag_calib->window_calib.offset_win_cnt++;
       }
 
-      /*          str = sprintf('Offset Win Cnt: %d', int16(mag_calib.window_calib.offset_win_cnt)); */
-      /*          disp(str) */
-      /*  Check for major changes on each axis */
-      if ((mag_calib->window_calib.x_max_val != MIN_int16_T) && (x_max >
-           mag_calib->window_calib.x_max_val + 200L)) {
-        mag_calib->window_calib.offset_major_change = 1U;
-      }
-
-      if ((mag_calib->window_calib.x_min_val != MAX_int16_T) && (x_min <
-           mag_calib->window_calib.x_min_val - 200L)) {
-        mag_calib->window_calib.offset_major_change = 1U;
-      }
-
-      if ((mag_calib->window_calib.y_max_val != MIN_int16_T) && (y_max >
-           mag_calib->window_calib.y_max_val + 200L)) {
-        mag_calib->window_calib.offset_major_change = 1U;
-      }
-
-      if ((mag_calib->window_calib.y_min_val != MAX_int16_T) && (y_min <
-           mag_calib->window_calib.y_min_val - 200L)) {
-        mag_calib->window_calib.offset_major_change = 1U;
-      }
-
-      if ((mag_calib->window_calib.z_max_val != MIN_int16_T) && (z_max >
-           mag_calib->window_calib.z_max_val + 200L)) {
-        mag_calib->window_calib.offset_major_change = 1U;
-      }
-
-      if ((mag_calib->window_calib.z_min_val != MAX_int16_T) && (z_min <
-           mag_calib->window_calib.z_min_val - 200L)) {
-        mag_calib->window_calib.offset_major_change = 1U;
-      }
-
-      /*          str = sprintf('Major Change: %d', int16(mag_calib.window_calib.offset_major_change)); */
-      /*          disp(str) */
-      /*  If we ever see a major change, reset the calibration */
-      /*  (pre-calibration or post_calibration) */
-      if (mag_calib->window_calib.offset_major_change != 0) {
-        /*  Something major changed - reset the calibration */
-        reset_calibration(mag_calib);
-        add_reason_code(mag_calib_major_change_reset, reason_codes);
-
-        /*  For debug */
-      } else {
-        /*  Update the max/min val - even if the calibration was just reset */
-        /*  due to a major offset change */
-        if (x_max > mag_calib->window_calib.x_max_val) {
-          if (mag_calib->window_calib.x_max_val != MIN_int16_T) {
-            g_x = (int32_T)x_max - mag_calib->window_calib.x_max_val;
-            if (g_x < 0L) {
-              d = (uint16_T)-g_x;
-            } else {
-              d = (uint16_T)g_x;
-            }
-
-            if (d > mag_calib->window_calib.offset_new_value_diff) {
-              mag_calib->window_calib.offset_new_value_diff = d;
-            }
-          }
-
-          mag_calib->window_calib.x_max_val = x_max;
-        }
-
-        if (x_min < mag_calib->window_calib.x_min_val) {
-          if (mag_calib->window_calib.x_min_val != MAX_int16_T) {
-            h_x = (int32_T)x_min - mag_calib->window_calib.x_min_val;
-            if (h_x < 0L) {
-              d = (uint16_T)-h_x;
-            } else {
-              d = (uint16_T)h_x;
-            }
-
-            if (d > mag_calib->window_calib.offset_new_value_diff) {
-              mag_calib->window_calib.offset_new_value_diff = d;
-            }
-          }
-
-          mag_calib->window_calib.x_min_val = x_min;
-        }
-
-        if (y_max > mag_calib->window_calib.y_max_val) {
-          if (mag_calib->window_calib.y_max_val != MIN_int16_T) {
-            i_x = (int32_T)y_max - mag_calib->window_calib.y_max_val;
-            if (i_x < 0L) {
-              d = (uint16_T)-i_x;
-            } else {
-              d = (uint16_T)i_x;
-            }
-
-            if (d > mag_calib->window_calib.offset_new_value_diff) {
-              mag_calib->window_calib.offset_new_value_diff = d;
-            }
-          }
-
-          mag_calib->window_calib.y_max_val = y_max;
-        }
-
-        if (y_min < mag_calib->window_calib.y_min_val) {
-          if (mag_calib->window_calib.y_min_val != MAX_int16_T) {
-            j_x = (int32_T)y_min - mag_calib->window_calib.y_min_val;
-            if (j_x < 0L) {
-              d = (uint16_T)-j_x;
-            } else {
-              d = (uint16_T)j_x;
-            }
-
-            if (d > mag_calib->window_calib.offset_new_value_diff) {
-              mag_calib->window_calib.offset_new_value_diff = d;
-            }
-          }
-
-          mag_calib->window_calib.y_min_val = y_min;
-        }
-
-        if (z_max > mag_calib->window_calib.z_max_val) {
-          if (mag_calib->window_calib.z_max_val != MIN_int16_T) {
-            k_x = (int32_T)z_max - mag_calib->window_calib.z_max_val;
-            if (k_x < 0L) {
-              d = (uint16_T)-k_x;
-            } else {
-              d = (uint16_T)k_x;
-            }
-
-            if (d > mag_calib->window_calib.offset_new_value_diff) {
-              mag_calib->window_calib.offset_new_value_diff = d;
-            }
-          }
-
-          mag_calib->window_calib.z_max_val = z_max;
-        }
-
-        if (z_min < mag_calib->window_calib.z_min_val) {
-          if (mag_calib->window_calib.z_min_val != MAX_int16_T) {
-            l_x = (int32_T)z_min - mag_calib->window_calib.z_min_val;
-            if (l_x < 0L) {
-              d = (uint16_T)-l_x;
-            } else {
-              d = (uint16_T)l_x;
-            }
-
-            if (d > mag_calib->window_calib.offset_new_value_diff) {
-              mag_calib->window_calib.offset_new_value_diff = d;
-            }
-          }
-
-          mag_calib->window_calib.z_min_val = z_min;
-        }
-      }
-
-      /*          str = sprintf('New Value Diff: %d', mag_calib.window_calib.offset_new_value_diff); */
-      /*          disp(str); */
-      /*  Only run this if magnet is present - this could have been reset */
-      /*  with the major change logic above */
-      if ((mag_calib->magnet_present != 0) && (mag_calib->offset_calibrated == 0))
-      {
-        if (mag_calib->window_calib.offset_win_cnt > 848U) {
-          if ((mag_calib->orientation_calibrated != 0) &&
-              (mag_calib->window_calib.x_max_val != MIN_int16_T) &&
-              (mag_calib->window_calib.x_min_val != MAX_int16_T) &&
-              (mag_calib->window_calib.y_max_val != MIN_int16_T) &&
-              (mag_calib->window_calib.y_min_val != MAX_int16_T) &&
-              (mag_calib->window_calib.z_max_val != MIN_int16_T) &&
-              (mag_calib->window_calib.z_min_val != MAX_int16_T)) {
-            /*  Set offset calibration */
-            set_offset_calibration(mag_calib);
-            add_reason_code(mag_calib_offset_calibrated, reason_codes);
-
-            /*  Calibration is finished - indicate that the */
-            /*  calibration has changed */
-            mag_calib->calibration_changed = 1U;
-          }
-
-          /*  Reset the window count */
-          mag_calib->window_calib.offset_win_cnt = 0U;
-        }
-      } else {
-        if ((mag_calib->offset_calibrated != 0) &&
-            (mag_calib->orientation_calibrated != 0) &&
-            (mag_calib->window_calib.offset_win_cnt > 212U)) {
-          if (mag_calib->window_calib.offset_new_value_diff > 100L) {
-            add_reason_code(mag_calib_new_offset_value_l2, reason_codes);
+      /*  Update the max/min val - even if the calibration was just reset */
+      /*  due to a major offset change */
+      if (x_max > mag_calib->window_calib.x_max_val) {
+        if (mag_calib->window_calib.x_max_val != MIN_int16_T) {
+          g_x = (int32_T)x_max - mag_calib->window_calib.x_max_val;
+          if (g_x < 0L) {
+            d = (uint16_T)-g_x;
           } else {
+            d = (uint16_T)g_x;
+          }
+
+          if (d > mag_calib->window_calib.offset_new_value_diff) {
+            mag_calib->window_calib.offset_new_value_diff = d;
+          }
+        }
+
+        mag_calib->window_calib.x_max_val = x_max;
+      }
+
+      if (x_min < mag_calib->window_calib.x_min_val) {
+        if (mag_calib->window_calib.x_min_val != MAX_int16_T) {
+          h_x = (int32_T)x_min - mag_calib->window_calib.x_min_val;
+          if (h_x < 0L) {
+            d = (uint16_T)-h_x;
+          } else {
+            d = (uint16_T)h_x;
+          }
+
+          if (d > mag_calib->window_calib.offset_new_value_diff) {
+            mag_calib->window_calib.offset_new_value_diff = d;
+          }
+        }
+
+        mag_calib->window_calib.x_min_val = x_min;
+      }
+
+      if (y_max > mag_calib->window_calib.y_max_val) {
+        if (mag_calib->window_calib.y_max_val != MIN_int16_T) {
+          i_x = (int32_T)y_max - mag_calib->window_calib.y_max_val;
+          if (i_x < 0L) {
+            d = (uint16_T)-i_x;
+          } else {
+            d = (uint16_T)i_x;
+          }
+
+          if (d > mag_calib->window_calib.offset_new_value_diff) {
+            mag_calib->window_calib.offset_new_value_diff = d;
+          }
+        }
+
+        mag_calib->window_calib.y_max_val = y_max;
+      }
+
+      if (y_min < mag_calib->window_calib.y_min_val) {
+        if (mag_calib->window_calib.y_min_val != MAX_int16_T) {
+          j_x = (int32_T)y_min - mag_calib->window_calib.y_min_val;
+          if (j_x < 0L) {
+            d = (uint16_T)-j_x;
+          } else {
+            d = (uint16_T)j_x;
+          }
+
+          if (d > mag_calib->window_calib.offset_new_value_diff) {
+            mag_calib->window_calib.offset_new_value_diff = d;
+          }
+        }
+
+        mag_calib->window_calib.y_min_val = y_min;
+      }
+
+      if (z_max > mag_calib->window_calib.z_max_val) {
+        if (mag_calib->window_calib.z_max_val != MIN_int16_T) {
+          k_x = (int32_T)z_max - mag_calib->window_calib.z_max_val;
+          if (k_x < 0L) {
+            d = (uint16_T)-k_x;
+          } else {
+            d = (uint16_T)k_x;
+          }
+
+          if (d > mag_calib->window_calib.offset_new_value_diff) {
+            mag_calib->window_calib.offset_new_value_diff = d;
+          }
+        }
+
+        mag_calib->window_calib.z_max_val = z_max;
+      }
+
+      if (z_min < mag_calib->window_calib.z_min_val) {
+        if (mag_calib->window_calib.z_min_val != MAX_int16_T) {
+          l_x = (int32_T)z_min - mag_calib->window_calib.z_min_val;
+          if (l_x < 0L) {
+            d = (uint16_T)-l_x;
+          } else {
+            d = (uint16_T)l_x;
+          }
+
+          if (d > mag_calib->window_calib.offset_new_value_diff) {
+            mag_calib->window_calib.offset_new_value_diff = d;
+          }
+        }
+
+        mag_calib->window_calib.z_min_val = z_min;
+      }
+
+      /*         %% Orientation Logic */
+      if (mag_calib->orientation_calibrated == 0) {
+        /*  THIS IS THE ORIENTATION CALIBRATION STATE */
+        if (mag_calib->window_calib.orient_win_cnt > 212U) {
+          /*  If we have enough windows of samples, determine the */
+          /*  orientation */
+          total_xy_cnt = mag_calib->window_calib.orient_xy_sync_window_cnt +
+            mag_calib->window_calib.orient_xy_nosync_window_cnt;
+          total_xz_cnt = mag_calib->window_calib.orient_xz_sync_window_cnt +
+            mag_calib->window_calib.orient_xz_nosync_window_cnt;
+
+          /*  Must have enough samples to make a orientation judgement */
+          /*  call */
+          if ((total_xy_cnt > 8000UL) && (total_xz_cnt > 8000UL)) {
+            if (mag_calib->window_calib.orient_reset_cnt < MAX_uint16_T) {
+              mag_calib->window_calib.orient_reset_cnt++;
+            }
+
+            /*  Compute the percent confidence in sync/non-sync */
+            if (mag_calib->window_calib.orient_xy_sync_window_cnt >=
+                mag_calib->window_calib.orient_xy_nosync_window_cnt) {
+              c_mag_calib = mag_calib->window_calib.orient_xy_sync_window_cnt -
+                mag_calib->window_calib.orient_xy_nosync_window_cnt;
+            } else {
+              c_mag_calib = mag_calib->window_calib.orient_xy_nosync_window_cnt
+                - mag_calib->window_calib.orient_xy_sync_window_cnt;
+            }
+
+            guard1 = false;
+            if ((int32_T)((uint32_T)(c_mag_calib * 100ULL) / total_xy_cnt) > 50L)
+            {
+              if (mag_calib->window_calib.orient_xz_sync_window_cnt >=
+                  mag_calib->window_calib.orient_xz_nosync_window_cnt) {
+                d_mag_calib = mag_calib->window_calib.orient_xz_sync_window_cnt
+                  - mag_calib->window_calib.orient_xz_nosync_window_cnt;
+              } else {
+                d_mag_calib =
+                  mag_calib->window_calib.orient_xz_nosync_window_cnt -
+                  mag_calib->window_calib.orient_xz_sync_window_cnt;
+              }
+
+              if ((int32_T)((uint32_T)(d_mag_calib * 100ULL) / total_xz_cnt) >
+                  50L) {
+                if (mag_calib->window_calib.orient_xy_sync_window_cnt >
+                    mag_calib->window_calib.orient_xy_nosync_window_cnt) {
+                  b_y_orientation = positive;
+                } else {
+                  b_y_orientation = negative;
+                }
+
+                /*  Note: X and Z must have the same orientation based on */
+                /*  the physics of the pump and magnet with normal */
+                /*  magnet placement */
+                if (mag_calib->window_calib.orient_xz_sync_window_cnt >
+                    mag_calib->window_calib.orient_xz_nosync_window_cnt) {
+                  g_mag_calib = positive;
+                } else {
+                  g_mag_calib = negative;
+                }
+
+                if (positive == g_mag_calib) {
+                  mag_calib->x_orientation = positive;
+                  mag_calib->y_orientation = b_y_orientation;
+                  mag_calib->z_orientation = positive;
+                  mag_calib->orientation_calibrated = 1U;
+                  add_reason_code(c_mag_calib_orientation_calibra, reason_codes);
+
+                  /*  Reset the window stats */
+                  mag_calib->window_calib.orient_reset_cnt = 0U;
+                  mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+                  mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+                  mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+                  mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+                  mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
+                } else {
+                  /*  Should never happen */
+                }
+              } else {
+                guard1 = true;
+              }
+            } else {
+              guard1 = true;
+            }
+
+            if (guard1 && (mag_calib->window_calib.orient_reset_cnt > 5U)) {
+              /*  Record a reason code - the magnet placement is */
+              /*  bad or the magnet is wobbling (or something else */
+              /*  we don't understand) */
+              add_reason_code(mag_calib_bad_placement_wobble, reason_codes);
+            }
+          } else {
+            if (total_xy_cnt <= 8000UL) {
+              add_reason_code(mag_calib_xy_cnt_low, reason_codes);
+            }
+
+            if (total_xz_cnt <= 8000UL) {
+              add_reason_code(mag_calib_xz_cnt_low, reason_codes);
+            }
+          }
+
+          /*  Start a new sampling period */
+          mag_calib->window_calib.orient_win_cnt = 0U;
+          if (mag_calib->window_calib.orient_reset_cnt > 5U) {
+            mag_calib->window_calib.orient_reset_cnt = 0U;
+            mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+            mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+            mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+            mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+            mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
+          }
+        }
+      } else {
+        /*  THIS IS ORIENTATION MONITORING */
+        if (mag_calib->window_calib.orient_win_cnt > 212U) {
+          /*  If we have enough windows of samples, determine the */
+          /*  orientation */
+          total_xy_cnt = mag_calib->window_calib.orient_xy_sync_window_cnt +
+            mag_calib->window_calib.orient_xy_nosync_window_cnt;
+          total_xz_cnt = mag_calib->window_calib.orient_xz_sync_window_cnt +
+            mag_calib->window_calib.orient_xz_nosync_window_cnt;
+
+          /*  Must have enough samples to make a orientation judgement */
+          /*  call */
+          if ((total_xy_cnt > 8000UL) && (total_xz_cnt > 8000UL)) {
+            if (mag_calib->window_calib.orient_reset_cnt < MAX_uint16_T) {
+              mag_calib->window_calib.orient_reset_cnt++;
+            }
+
+            /*  Compute the percent confidence in sync/non-sync */
+            if (mag_calib->window_calib.orient_xy_sync_window_cnt >=
+                mag_calib->window_calib.orient_xy_nosync_window_cnt) {
+              b_mag_calib = mag_calib->window_calib.orient_xy_sync_window_cnt -
+                mag_calib->window_calib.orient_xy_nosync_window_cnt;
+            } else {
+              b_mag_calib = mag_calib->window_calib.orient_xy_nosync_window_cnt
+                - mag_calib->window_calib.orient_xy_sync_window_cnt;
+            }
+
+            guard1 = false;
+            guard2 = false;
+            if ((int32_T)((uint32_T)(b_mag_calib * 100ULL) / total_xy_cnt) > 50L)
+            {
+              if (mag_calib->window_calib.orient_xz_sync_window_cnt >=
+                  mag_calib->window_calib.orient_xz_nosync_window_cnt) {
+                e_mag_calib = mag_calib->window_calib.orient_xz_sync_window_cnt
+                  - mag_calib->window_calib.orient_xz_nosync_window_cnt;
+              } else {
+                e_mag_calib =
+                  mag_calib->window_calib.orient_xz_nosync_window_cnt -
+                  mag_calib->window_calib.orient_xz_sync_window_cnt;
+              }
+
+              if ((int32_T)((uint32_T)(e_mag_calib * 100ULL) / total_xz_cnt) >
+                  50L) {
+                /*  Since we got here, reset the cal reset count */
+                mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+                if (positive != mag_calib->x_orientation) {
+                  guard2 = true;
+                } else {
+                  if (mag_calib->window_calib.orient_xy_sync_window_cnt >
+                      mag_calib->window_calib.orient_xy_nosync_window_cnt) {
+                    f_mag_calib = positive;
+                  } else {
+                    f_mag_calib = negative;
+                  }
+
+                  if (f_mag_calib != mag_calib->y_orientation) {
+                    guard2 = true;
+                  } else {
+                    if (mag_calib->window_calib.orient_xz_sync_window_cnt >
+                        mag_calib->window_calib.orient_xz_nosync_window_cnt) {
+                      h_mag_calib = positive;
+                    } else {
+                      h_mag_calib = negative;
+                    }
+
+                    if (h_mag_calib != mag_calib->z_orientation) {
+                      guard2 = true;
+                    }
+                  }
+                }
+              } else {
+                guard1 = true;
+              }
+            } else {
+              guard1 = true;
+            }
+
+            if (guard2) {
+              /*  Reset the calibration */
+              reset_calibration(mag_calib);
+              add_reason_code(mag_calib_orientation_reset, reason_codes);
+
+              /*  Reset the window stats */
+              mag_calib->window_calib.orient_reset_cnt = 0U;
+              mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+              mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+              mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+              mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+              mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
+
+              /*  For debug */
+            }
+
+            if (guard1) {
+              /*  Record a reason code - the magnet placement is */
+              /*  bad or the magnet is wobbling (or something else */
+              /*  we don't understand) */
+              if (mag_calib->window_calib.orient_reset_cnt > 5U) {
+                add_reason_code(mag_calib_bad_placement_wobble, reason_codes);
+                if (mag_calib->window_calib.orient_cal_reset_cnt < MAX_uint16_T)
+                {
+                  mag_calib->window_calib.orient_cal_reset_cnt++;
+                }
+              }
+
+              /*  If monitoring is not possible becaucase we are */
+              /*  unable to get good ratios, we should reset the */
+              /*  calibration since something has changed and the */
+              /*  strokes are not inaccurate */
+              if (mag_calib->window_calib.orient_cal_reset_cnt > 10U) {
+                /*  Reset the calibration */
+                reset_calibration(mag_calib);
+                add_reason_code(mag_calib_orientation_reset, reason_codes);
+
+                /*  Reset the window stats */
+                mag_calib->window_calib.orient_reset_cnt = 0U;
+                mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+                mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+                mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+                mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+                mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
+
+                /*  For debug */
+              }
+            }
+          }
+
+          /*  Start a new sampling period */
+          mag_calib->window_calib.orient_win_cnt = 0U;
+          if (mag_calib->window_calib.orient_reset_cnt > 5U) {
+            mag_calib->window_calib.orient_reset_cnt = 0U;
+            mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+            mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+            mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+            mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
+          }
+        }
+      }
+
+      /*         %% -- Orientation is now calibrated */
+      if (mag_calib->orientation_calibrated != 0) {
+        /*             %% Offset Logic */
+        /*  Only run this if magnet is present - this could have been reset */
+        /*  with the major change logic above */
+        if (mag_calib->offset_calibrated == 0) {
+          /*  THIS IS THE OFFSET CALIBRATION STATE */
+          if (mag_calib->window_calib.offset_win_cnt > 848U) {
+            if ((mag_calib->orientation_calibrated != 0) &&
+                (mag_calib->window_calib.x_max_val != MIN_int16_T) &&
+                (mag_calib->window_calib.x_min_val != MAX_int16_T) &&
+                (mag_calib->window_calib.y_max_val != MIN_int16_T) &&
+                (mag_calib->window_calib.y_min_val != MAX_int16_T) &&
+                (mag_calib->window_calib.z_max_val != MIN_int16_T) &&
+                (mag_calib->window_calib.z_min_val != MAX_int16_T)) {
+              /*  Set offset calibration */
+              set_offset_calibration(mag_calib);
+              add_reason_code(mag_calib_offset_calibrated, reason_codes);
+
+              /*  Calibration is finished - indicate that the */
+              /*  calibration has changed */
+              mag_calib->calibration_changed = 1U;
+            }
+
+            /*  Reset the window count */
+            mag_calib->window_calib.offset_win_cnt = 0U;
+            mag_calib->window_calib.offset_new_value_diff = 0L;
+          }
+        } else {
+          if ((mag_calib->offset_calibrated != 0) &&
+              (mag_calib->window_calib.offset_win_cnt > 212U)) {
+            /*  THIS IS OFFSET MONITORING */
+            /*  Allow for some updates to the range in case there are */
+            /*  new scenarios that occur after calibration */
             if (mag_calib->window_calib.offset_new_value_diff > 50L) {
               add_reason_code(mag_calib_new_offset_value_l1, reason_codes);
-            }
-          }
+            } else {
+              if (mag_calib->window_calib.offset_new_value_diff > 200L) {
+                /*  Something major changed - reset the calibration */
+                reset_calibration(mag_calib);
+                add_reason_code(mag_calib_major_change_reset, reason_codes);
 
-          /*  Reset the window count */
-          mag_calib->window_calib.offset_win_cnt = 0U;
-          mag_calib->window_calib.offset_new_value_diff = 0L;
+                /*  For debug */
+              }
+            }
+
+            /*  Reset the window count */
+            mag_calib->window_calib.offset_win_cnt = 0U;
+            mag_calib->window_calib.offset_new_value_diff = 0L;
+          }
         }
       }
     }

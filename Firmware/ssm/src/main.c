@@ -82,7 +82,7 @@ void main(void)
         }
         else
         {
-            HW_TERM_PrintColor("External oscillator FAILED!\n", KRED);
+            HW_TERM_Print("External oscillator FAILED!\n");
         }
 
         APP_init();
@@ -122,7 +122,7 @@ void main(void)
     }
     else
     {
-        HW_TERM_PrintColor("CRITICALLY LOW BATTERY LEVEL - DO NOTHING", KRED);
+        HW_TERM_Print("CRITICALLY LOW BATTERY LEVEL - DO NOTHING");
     }
 
 

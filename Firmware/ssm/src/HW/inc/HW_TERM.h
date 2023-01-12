@@ -29,19 +29,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//Use these to print text in color:
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
 
 extern void HW_TERM_Init(void);
 extern void HW_TERM_Print(uint8_t * p_str);
-extern void HW_TERM_PrintColor(uint8_t * p_str, uint8_t * p_color);
+//extern void HW_TERM_PrintColor(uint8_t * p_str, uint8_t * p_color);
 extern void HW_TERM_GetCommand(uint8_t * p_buff);
 extern bool HW_TERM_CommandRdy(void);
 extern void HW_TERM_ReportPadValues(void);

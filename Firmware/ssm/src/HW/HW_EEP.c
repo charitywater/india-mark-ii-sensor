@@ -110,7 +110,7 @@ uint8_t HW_EEP_ReadByte(uint16_t addr)
         }
         else
         {
-            HW_TERM_PrintColor("HW_EEP: ERROR.  Could not read EEP.\n", KRED);
+            HW_TERM_Print("HW_EEP: ERROR.  Could not read EEP.\n");
         }
 
         retry--;
@@ -118,7 +118,7 @@ uint8_t HW_EEP_ReadByte(uint16_t addr)
 
     if ( stat == false )
     {
-        HW_TERM_PrintColor("HW_EEP: ERROR.  Could not read EEP - FAILED RETRIES .\n", KRED);
+        HW_TERM_Print("HW_EEP: ERROR.  Could not read EEP - FAILED RETRIES .\n");
         APP_indicateError(EEPROM_READ_ERROR);
     }
 
@@ -186,7 +186,7 @@ void HW_EEP_WriteBlock(uint16_t addr, uint8_t * p_data, uint8_t num_bytes)
             }
             else
             {
-                HW_TERM_PrintColor("HW_EEP: ERROR. Could not write block to EEP.\n", KRED);
+                HW_TERM_Print("HW_EEP: ERROR. Could not write block to EEP.\n");
             }
 
             retry--;
@@ -194,7 +194,7 @@ void HW_EEP_WriteBlock(uint16_t addr, uint8_t * p_data, uint8_t num_bytes)
 
         if ( pass == false)
         {
-            HW_TERM_PrintColor("HW_EEP: ERROR. Could not write block to EEP - FAILED RETRIES.\n", KRED);
+            HW_TERM_Print("HW_EEP: ERROR. Could not write block to EEP - FAILED RETRIES.\n");
             num_bytes = 0;
             APP_indicateError(EEPROM_WRITE_ERROR);
         }
@@ -229,7 +229,7 @@ void HW_EEP_WriteByte(uint16_t addr, uint8_t value)
         }
         else
         {
-            HW_TERM_PrintColor("HW_EEP: ERROR. Could not write byte to EEP.\n", KRED);
+            HW_TERM_Print("HW_EEP: ERROR. Could not write byte to EEP.\n");
         }
 
         retry--;
@@ -237,7 +237,7 @@ void HW_EEP_WriteByte(uint16_t addr, uint8_t value)
 
     if ( pass == false)
     {
-        HW_TERM_PrintColor("HW_EEP: ERROR. Could not write byte to EEP. - FAILED RETRIES \n", KRED);
+        HW_TERM_Print("HW_EEP: ERROR. Could not write byte to EEP. - FAILED RETRIES \n");
         APP_indicateError(EEPROM_WRITE_ERROR);
     }
 
@@ -265,11 +265,11 @@ void HW_EEP_DoTest(void)
 
     if (test_pass == true)
     {
-        HW_TERM_PrintColor("\nHW_EEP: CAT24C512WI write/read test pass.\n", KGRN);
+        HW_TERM_Print("\nHW_EEP: CAT24C512WI write/read test pass.\n");
     }
     else
     {
-        HW_TERM_PrintColor("\nHW_EEP: CAT24C512WI write/read test fail!\n", KRED);
+        HW_TERM_Print("\nHW_EEP: CAT24C512WI write/read test fail!\n");
     }
 }
 
@@ -311,7 +311,7 @@ static bool xWaitForWriteToFinish(void)
     {
         if (uC_TIME_GetRuntimeSeconds() >= target_S)
         {
-            HW_TERM_PrintColor("HW_EEP: ERROR. EEP could not complete write after good coms.\n", KRED);
+            HW_TERM_Print("HW_EEP: ERROR. EEP could not complete write after good coms.\n");
             pass = false;
             break; // Don't want to keep waiting.
         }

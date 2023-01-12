@@ -79,7 +79,7 @@ APP_NVM_SENSOR_DATA_T Test_Sensor_Data =
 void APP_CLI_Periodic(void);
 void APP_CLI_Init(void);
 void APP_CLI_Print(uint8_t * pubStr);
-bool APP_CLI_CollectingData(void);
+//bool APP_CLI_CollectingData(void);
 
 static void HandleRTC(int argc, char **argv);
 static void HandleEEP(int argc, char **argv);
@@ -98,7 +98,7 @@ static void HandleEnv(int argc, char **argv);
 static void HandleMag(int argc, char **argv);
 
 static uint8_t APP_CLI_CommandBuffer[HW_TERM_RX_BUF_LEN];
-static bool Collecting_Data = false;
+//static bool Collecting_Data = false;
 
 #define APP_CLI_PROMPT  "\nssm_cli> "
 
@@ -456,10 +456,10 @@ static void HandleBatt(int argc, char **argv)
     }
 }
 
-bool APP_CLI_CollectingData(void)
-{
-    return Collecting_Data;
-}
+//bool APP_CLI_CollectingData(void)
+//{
+//    return Collecting_Data;
+//}
 
 static void HandleSensorData(int argc, char **argv)
 {
@@ -501,7 +501,7 @@ static void HandleSensorData(int argc, char **argv)
 
         for(i = 0; i < num_reports; i++)
         {
-            HW_TERM_PrintColor("Logging sensor data (test).\n", KMAG);
+            HW_TERM_Print("Logging sensor data (test).\n");
             APP_NVM_Custom_LogSensorData(&Test_Sensor_Data);
         }
     }
@@ -610,7 +610,7 @@ static void HandleEEP(int argc, char **argv)
            }
            else
            {
-               HW_TERM_PrintColor("\nFAIL\n", KRED);
+               HW_TERM_Print("\nFAIL\n");
            }
         }
         else if (strcmp(argv[SECOND_ARG_IDX], "write") == 0)
@@ -673,7 +673,6 @@ static void HandleTerm(int argc, char **argv)
 static void HandleRuntime(int argc, char **argv)
 {
     uint8_t str[40];
-    uint32_t value = 0;
     uint32_t runtime_s;
     uint64_t ticks;
 
@@ -685,20 +684,20 @@ static void HandleRuntime(int argc, char **argv)
         sprintf((char *)str, "Runtime: Ticks: %llu\nSeconds: %lu\n", ticks, runtime_s);
         HW_TERM_Print(str);
     }
-    else if(argc == TWO_ARGUMENTS)
-    {
-        if(0 == strcmp(argv[FIRST_ARG_IDX], "set"))
-        {
-            value = strtoul(argv[SECOND_ARG_IDX], NULL, 10);
-            sprintf((char *)str, "Setting run time to %lu seconds.", value);
-            HW_TERM_Print(str);
-            uC_TIME_SetRuntime(value);
-        }
-        else
-        {
-            HW_TERM_Print("Invalid parameter.\n");
-        }
-    }
+//    else if(argc == TWO_ARGUMENTS)
+//    {
+//        if(0 == strcmp(argv[FIRST_ARG_IDX], "set"))
+//        {
+//            value = strtoul(argv[SECOND_ARG_IDX], NULL, 10);
+//            sprintf((char *)str, "Setting run time to %lu seconds.", value);
+//            HW_TERM_Print(str);
+//            uC_TIME_SetRuntime(value);
+//        }
+//        else
+//        {
+//            HW_TERM_Print("Invalid parameter.\n");
+//        }
+//    }
     else
     {
         HW_TERM_Print("Invalid parameter format.\n");

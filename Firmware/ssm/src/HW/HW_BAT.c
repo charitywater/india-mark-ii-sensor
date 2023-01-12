@@ -183,7 +183,7 @@ fuelGaugeStatus_t HW_FUEL_GAUGE_Initialize(void)
     }
     else
     {
-        HW_TERM_PrintColor("\r\nFuel Gauge Sleep NOT Enabled", KRED);
+        HW_TERM_Print("\r\nFuel Gauge Sleep NOT Enabled");
         sprintf((char *)printBuffer, "\r\n reg: 0x%X", statusRegVal);
         HW_TERM_Print(printBuffer);
     }
@@ -264,7 +264,7 @@ void HW_BAT_TakeNewVoltageMeasurement(void)
     if ( latestBatteryVoltageMv <= CRITICAL_VOLTAGE_THRESHOLD_MV )
     {
         isBatteryCriticallyLow = true;
-        HW_TERM_PrintColor("CRITICALLY LOW BATTERY LEVEL DETECTED", KRED);
+        HW_TERM_Print("CRITICALLY LOW BATTERY LEVEL DETECTED");
     }
 }
 
@@ -311,27 +311,27 @@ bool HW_BAT_IsBatteryLow(void)
     return isBatteryCriticallyLow;
 }
 
-void HW_FUEL_GAUGE_readAccumulatedCurrent(int32_t* accumulator_uAh)
-{
-    uint16_t acrRegVal;
-
-    HW_FUEL_GAUGE_ReadAccumReg(&acrRegVal);
-
-    // Convert to milli-amp hours
-    *accumulator_uAh = ((int32_t)((int16_t)acrRegVal)*NANO_AMP_HOURS_PER_LSB)/NANO_AMPS_PER_MICRO_AMP;
-}
-
-void HW_FUEL_GAUGE_readInstantCurrent(int32_t* instCurrent_uA)
-{
-    uint16_t currentRegVal;
-    HW_FUEL_GAUGE_ReadCurrentReg(&currentRegVal);
-
-    sprintf((char *)printBuffer, "\r\n raw val 0x%X", currentRegVal);
-    HW_TERM_Print(printBuffer);
-
-    // Convert to micro-amps
-    *instCurrent_uA = ((int32_t)((int16_t)currentRegVal)*NANO_AMPS_PER_LSB)/NANO_AMPS_PER_MICRO_AMP;
-}
+//void HW_FUEL_GAUGE_readAccumulatedCurrent(int32_t* accumulator_uAh)
+//{
+//    uint16_t acrRegVal;
+//
+//    HW_FUEL_GAUGE_ReadAccumReg(&acrRegVal);
+//
+//    // Convert to milli-amp hours
+//    *accumulator_uAh = ((int32_t)((int16_t)acrRegVal)*NANO_AMP_HOURS_PER_LSB)/NANO_AMPS_PER_MICRO_AMP;
+//}
+//
+//void HW_FUEL_GAUGE_readInstantCurrent(int32_t* instCurrent_uA)
+//{
+//    uint16_t currentRegVal;
+//    HW_FUEL_GAUGE_ReadCurrentReg(&currentRegVal);
+//
+//    sprintf((char *)printBuffer, "\r\n raw val 0x%X", currentRegVal);
+//    HW_TERM_Print(printBuffer);
+//
+//    // Convert to micro-amps
+//    *instCurrent_uA = ((int32_t)((int16_t)currentRegVal)*NANO_AMPS_PER_LSB)/NANO_AMPS_PER_MICRO_AMP;
+//}
 
 
 static fuelGaugeStatus_t xReadRegister(uint8_t addr, uint8_t* data, uint8_t len)
@@ -400,22 +400,22 @@ fuelGaugeStatus_t HW_FUEL_GAUGE_WriteStatusReg(uint8_t data)
     return xWriteRegister(STATUS_REG_ADDR, &data, STATUS_REG_LEN);
 }
 
-fuelGaugeStatus_t HW_FUEL_GAUGE_ReadCurrentReg(uint16_t* data)
-{
-    return xReadRegister(CURRENT_REG_ADDR, (uint8_t*)data, CURRENT_REG_LEN);
-}
-
-fuelGaugeStatus_t HW_FUEL_GAUGE_ReadAccumReg(uint16_t* data)
-{
-    return xReadRegister(ACCUM_REG_ADDR, (uint8_t*)data, ACCUM_REG_LEN);
-}
-
-fuelGaugeStatus_t HW_FUEL_GAUGE_ClearAccumReg(void)
-{
-    uint16_t accumRegWriteVal = 0x0000;
-
-    return xWriteRegister(ACCUM_REG_ADDR, (uint8_t*)&accumRegWriteVal, ACCUM_REG_LEN);
-}
+//fuelGaugeStatus_t HW_FUEL_GAUGE_ReadCurrentReg(uint16_t* data)
+//{
+//    return xReadRegister(CURRENT_REG_ADDR, (uint8_t*)data, CURRENT_REG_LEN);
+//}
+//
+//fuelGaugeStatus_t HW_FUEL_GAUGE_ReadAccumReg(uint16_t* data)
+//{
+//    return xReadRegister(ACCUM_REG_ADDR, (uint8_t*)data, ACCUM_REG_LEN);
+//}
+//
+//fuelGaugeStatus_t HW_FUEL_GAUGE_ClearAccumReg(void)
+//{
+//    uint16_t accumRegWriteVal = 0x0000;
+//
+//    return xWriteRegister(ACCUM_REG_ADDR, (uint8_t*)&accumRegWriteVal, ACCUM_REG_LEN);
+//}
 
 static owiStatus_t xOwiWriteRead(uint8_t* txData, uint8_t txLen, uint8_t* rxData, uint8_t rxLen)
 {

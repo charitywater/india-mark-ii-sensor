@@ -40,14 +40,14 @@
 #define WATER_CALIB_NEG                     BIT_8
 #define WATER_BAD_SAMPLE                    BIT_9
 #define WATER_STANDING                      BIT_10
-#define WATER_CLOGGED_PUMP                  BIT_11
-#define WATER_VOLUME_CAPPED                 BIT_12
+#define CALIB_XZ_CNT_LOW                    BIT_11
+#define CALIB_XY_CNT_LOW                    BIT_12
 #define MISSED_SAMPLE_THRESH                BIT_13
 #define AVG_SAMPLE_PERIOD_DRIFT             BIT_14
 #define CALIB_MAJOR_CHANGE_RESET            BIT_15
 #define CALIB_ORIENT_RESET                  BIT_16
 #define CALIB_NEW_OFFSET_VAL_1              BIT_17
-#define CALIB_NEW_OFFSET_VAL_2              BIT_18
+#define CALIB_BAD_PLACEMENT                 BIT_18
 
 extern void APP_ALGO_Init(void);
 extern void APP_ALGO_wakeUpInit(void);

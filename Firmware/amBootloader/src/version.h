@@ -14,8 +14,8 @@ See Twisthink-SoftwareLicenseAgreement-Auris.docx for details.
 #ifndef VERSION_H_
 #define VERSION_H_
 
-#define BL_VERSION_MAJOR    0
-#define BL_VERSION_MINOR    1
-#define BL_VERSION_BUILD    3
+#define BL_VERSION_MAJOR    1
+#define BL_VERSION_MINOR    3
+#define BL_VERSION_BUILD    0
 
 #endif /* VERSION_H_ */

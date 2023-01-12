@@ -27,8 +27,8 @@
 
 /* current firmware revision */
 #define VERSION_MAJOR   (uint8_t)1
-#define VERSION_MINOR   (uint8_t)2
-#define VERSION_BUILD   (uint8_t)1
+#define VERSION_MINOR   (uint8_t)7
+#define VERSION_BUILD   (uint8_t)0
 
 #define HW_VERSION               4
 

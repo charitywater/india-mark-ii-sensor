@@ -2,7 +2,7 @@
  * File: wakeupDataReset.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:57:23
+ * C/C++ source code generated on  : 27-Oct-2022 08:09:11
  */
 
 /* Include Files */
@@ -56,7 +56,7 @@ void wakeupDataReset(padWindows_t *pad_windows, magWindows_t *mag_windows,
 
   /*  Reset pad filtering buffers */
   Pad_Filter_Data->buffer_idx = 0U;
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < 6; i++) {
     Pad_Filter_Data->pad_1_buffer[i] = 0;
     Pad_Filter_Data->pad_2_buffer[i] = 0;
     Pad_Filter_Data->pad_3_buffer[i] = 0;

@@ -2,7 +2,7 @@
  * File: checkWaterCalibration.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:35
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:46
  */
 
 /* Include Files */
@@ -57,17 +57,17 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
       (prev_water_data->pad2_present.present_type == water_present) &&
       (water_calib->pad_2_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6) && (water_calib->pad_7_calib[0] - 6 <=
-         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 6) &&
-        (water_calib->pad_6_calib[0] - 6 <= pad_6_thresh) && (pad_6_thresh <=
-         water_calib->pad_6_calib[0] + 6) && (water_calib->pad_5_calib[0] - 6 <=
-         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 6) &&
-        (water_calib->pad_4_calib[0] - 6 <= pad_4_thresh) && (pad_4_thresh <=
-         water_calib->pad_4_calib[0] + 6) && (water_calib->pad_3_calib[0] - 6 <=
-         pad_3_thresh) && (pad_3_thresh <= water_calib->pad_3_calib[0] + 6) &&
-        (water_calib->pad_2_calib[0] - 6 <= pad_2_thresh) && (pad_2_thresh <=
-         water_calib->pad_2_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5) && (water_calib->pad_7_calib[0] - 5 <=
+         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 5) &&
+        (water_calib->pad_6_calib[0] - 5 <= pad_6_thresh) && (pad_6_thresh <=
+         water_calib->pad_6_calib[0] + 5) && (water_calib->pad_5_calib[0] - 5 <=
+         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 5) &&
+        (water_calib->pad_4_calib[0] - 5 <= pad_4_thresh) && (pad_4_thresh <=
+         water_calib->pad_4_calib[0] + 5) && (water_calib->pad_3_calib[0] - 5 <=
+         pad_3_thresh) && (pad_3_thresh <= water_calib->pad_3_calib[0] + 5) &&
+        (water_calib->pad_2_calib[0] - 5 <= pad_2_thresh) && (pad_2_thresh <=
+         water_calib->pad_2_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -77,15 +77,15 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
              (prev_water_data->pad3_present.present_type == water_present) &&
              (water_calib->pad_3_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6) && (water_calib->pad_7_calib[0] - 6 <=
-         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 6) &&
-        (water_calib->pad_6_calib[0] - 6 <= pad_6_thresh) && (pad_6_thresh <=
-         water_calib->pad_6_calib[0] + 6) && (water_calib->pad_5_calib[0] - 6 <=
-         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 6) &&
-        (water_calib->pad_4_calib[0] - 6 <= pad_4_thresh) && (pad_4_thresh <=
-         water_calib->pad_4_calib[0] + 6) && (water_calib->pad_3_calib[0] - 6 <=
-         pad_3_thresh) && (pad_3_thresh <= water_calib->pad_3_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5) && (water_calib->pad_7_calib[0] - 5 <=
+         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 5) &&
+        (water_calib->pad_6_calib[0] - 5 <= pad_6_thresh) && (pad_6_thresh <=
+         water_calib->pad_6_calib[0] + 5) && (water_calib->pad_5_calib[0] - 5 <=
+         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 5) &&
+        (water_calib->pad_4_calib[0] - 5 <= pad_4_thresh) && (pad_4_thresh <=
+         water_calib->pad_4_calib[0] + 5) && (water_calib->pad_3_calib[0] - 5 <=
+         pad_3_thresh) && (pad_3_thresh <= water_calib->pad_3_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -95,14 +95,14 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
              (prev_water_data->pad4_present.present_type == water_present) &&
              (water_calib->pad_4_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6) && (water_calib->pad_7_calib[0] - 6 <=
-         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 6) &&
-        (water_calib->pad_6_calib[0] - 6 <= pad_6_thresh) && (pad_6_thresh <=
-         water_calib->pad_6_calib[0] + 6) && (water_calib->pad_5_calib[0] - 6 <=
-         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 6) &&
-        (water_calib->pad_4_calib[0] - 6 <= pad_4_thresh) && (pad_4_thresh <=
-         water_calib->pad_4_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5) && (water_calib->pad_7_calib[0] - 5 <=
+         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 5) &&
+        (water_calib->pad_6_calib[0] - 5 <= pad_6_thresh) && (pad_6_thresh <=
+         water_calib->pad_6_calib[0] + 5) && (water_calib->pad_5_calib[0] - 5 <=
+         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 5) &&
+        (water_calib->pad_4_calib[0] - 5 <= pad_4_thresh) && (pad_4_thresh <=
+         water_calib->pad_4_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -112,12 +112,12 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
              (prev_water_data->pad5_present.present_type == water_present) &&
              (water_calib->pad_5_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6) && (water_calib->pad_7_calib[0] - 6 <=
-         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 6) &&
-        (water_calib->pad_6_calib[0] - 6 <= pad_6_thresh) && (pad_6_thresh <=
-         water_calib->pad_6_calib[0] + 6) && (water_calib->pad_5_calib[0] - 6 <=
-         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5) && (water_calib->pad_7_calib[0] - 5 <=
+         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 5) &&
+        (water_calib->pad_6_calib[0] - 5 <= pad_6_thresh) && (pad_6_thresh <=
+         water_calib->pad_6_calib[0] + 5) && (water_calib->pad_5_calib[0] - 5 <=
+         pad_5_thresh) && (pad_5_thresh <= water_calib->pad_5_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -127,11 +127,11 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
              (prev_water_data->pad6_present.present_type == water_present) &&
              (water_calib->pad_6_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6) && (water_calib->pad_7_calib[0] - 6 <=
-         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 6) &&
-        (water_calib->pad_6_calib[0] - 6 <= pad_6_thresh) && (pad_6_thresh <=
-         water_calib->pad_6_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5) && (water_calib->pad_7_calib[0] - 5 <=
+         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 5) &&
+        (water_calib->pad_6_calib[0] - 5 <= pad_6_thresh) && (pad_6_thresh <=
+         water_calib->pad_6_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -141,9 +141,9 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
              (prev_water_data->pad7_present.present_type == water_present) &&
              (water_calib->pad_7_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6) && (water_calib->pad_7_calib[0] - 6 <=
-         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5) && (water_calib->pad_7_calib[0] - 5 <=
+         pad_7_thresh) && (pad_7_thresh <= water_calib->pad_7_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -153,8 +153,8 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
              (prev_water_data->pad8_present.present_type == water_present) &&
              (water_calib->pad_8_calib_done == 1)) {
     /*  Check against current calibration */
-    if ((water_calib->pad_8_calib[0] - 6 <= pad_8_thresh) && (pad_8_thresh <=
-         water_calib->pad_8_calib[0] + 6)) {
+    if ((water_calib->pad_8_calib[0] - 5 <= pad_8_thresh) && (pad_8_thresh <=
+         water_calib->pad_8_calib[0] + 5)) {
       prev_water_data->water_cal_error_count = 0U;
     } else {
       prev_water_data->water_cal_error_count++;
@@ -164,7 +164,7 @@ uint8_T checkWaterCalibration(waterAlgoData_t *prev_water_data,
     guard1 = true;
   }
 
-  if (guard1 && (prev_water_data->water_cal_error_count > 2)) {
+  if (guard1 && (prev_water_data->water_cal_error_count > 4)) {
     /*  If we have seen enough bad values reset the cal */
     water_calib->pad_1_calib[0] = 0;
     water_calib->pad_2_calib[0] = 0;

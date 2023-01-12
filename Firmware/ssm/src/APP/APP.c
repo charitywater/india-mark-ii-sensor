@@ -113,6 +113,7 @@ static bool xWaitingOnTimeSync = false;
 static bool xTimerForVoltageReadingOn = false;
 static uint32_t xTimerForVoltReadingStartTime = 0u;
 static bool xNewRedFlagDetected = false;
+static bool xNewGreenFlagDetected = false;
 static bool xisPumpHealthRunning = false;
 
 void APP_init(void);
@@ -143,7 +144,7 @@ static void xSetCurrentHourIdx(uint8_t hr);
 static uint8_t xGetCurrentHourIdx(void);
 static void xRunAlgoDiagnostics(uint64_t timeLastRan, uint64_t currentTime);
 
-static uint8_t appString[150];
+static uint8_t appString[50];
 
 void APP_init(void)
 {
@@ -305,7 +306,7 @@ void APP_periodic(void)
                 xResetSensorData();
 
                 //check if we have enough data logs to send to the AM/cloud:
-                if ( APP_NVM_Custom_GetSensorDataNumEntries() >= xTransmissionRateInDays || xNewRedFlagDetected == true )
+                if ( APP_NVM_Custom_GetSensorDataNumEntries() >= xTransmissionRateInDays || xNewRedFlagDetected == true || xNewGreenFlagDetected == true )
                 {
                     HW_TERM_Print("waking up the AM\r\n");
 
@@ -324,6 +325,7 @@ void APP_periodic(void)
 
                     //reset flag
                     xNewRedFlagDetected = false;
+                    xNewGreenFlagDetected = false;
                 }
 
                 xPumpActiveTimerExpired = false;
@@ -451,6 +453,11 @@ reset_state_t APP_getResetState(void)
 void APP_setNewRedFlagDetected(bool isNewRedFlagPresent)
 {
     xNewRedFlagDetected = isNewRedFlagPresent;
+}
+
+void APP_setNewGreenFlagDetected(bool isNewGreenFlagPresent)
+{
+    xNewGreenFlagDetected = isNewGreenFlagPresent;
 }
 
 void APP_handleConfigs(uint32_t transmissRate, bool strokeAlgIsOn, uint16_t redFlagOnThresh, uint16_t redFlagOffThresh)
@@ -860,6 +867,13 @@ static void xUpdateSensorData(void)
         }
         else
         {
+            if ( redFlagDetected == true )
+            {
+                // we now need to set the green flag indicator
+                APP_setNewGreenFlagDetected(true);
+                HW_TERM_Print("green flag");
+            }
+
             redFlagDetected = false;
         }
     }
@@ -1111,7 +1125,7 @@ static void xRunAlgoDiagnostics(uint64_t timeLastRan, uint64_t currentTime)
     if ( algLastRanGreaterThan50MsCounts >= LATE_ALGO_RUNS_THRESHOLD )
     {
         //take an action based on how many times this has happened today
-        HW_TERM_PrintColor("\r\n Exceeded 20 late algorithm runs \r\n", KRED);
+        HW_TERM_Print("\r\n Exceeded 20 late algorithm runs \r\n");
 
         if ( (sensorData.errorBits & AVG_SAMPLE_PERIOD_DRIFT) == 0 )
         {
@@ -1146,7 +1160,7 @@ static void xRunAlgoDiagnostics(uint64_t timeLastRan, uint64_t currentTime)
     {
         if ( missedSamplesCount >= MISSED_ALGO_RUNS_THRESHOLD )
         {
-            HW_TERM_PrintColor("\r\n Exceeded 6 missed samples in 3 seconds \r\n", KRED);
+            HW_TERM_Print("\r\n Exceeded 6 missed samples in 3 seconds \r\n");
 
             if ( (sensorData.errorBits & MISSED_SAMPLE_THRESH) == 0 )
             {

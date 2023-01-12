@@ -2,7 +2,7 @@
  * File: initializeMagCalibration_types.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:59:20
+ * C/C++ source code generated on  : 27-Oct-2022 08:11:44
  */
 
 #ifndef INITIALIZEMAGCALIBRATION_TYPES_H
@@ -36,12 +36,13 @@ typedef struct {
   uint16_T mag_pres_pos_win_cnt;
   uint16_T mag_pres_neg_win_cnt;
   uint16_T orient_win_cnt;
-  uint16_T orient_xy_sync_window_cnt;
-  uint16_T orient_xy_nosync_window_cnt;
-  uint16_T orient_xz_sync_window_cnt;
-  uint16_T orient_xz_nosync_window_cnt;
+  uint16_T orient_reset_cnt;
+  uint16_T orient_cal_reset_cnt;
+  uint32_T orient_xy_sync_window_cnt;
+  uint32_T orient_xy_nosync_window_cnt;
+  uint32_T orient_xz_sync_window_cnt;
+  uint32_T orient_xz_nosync_window_cnt;
   uint16_T offset_win_cnt;
-  uint8_T offset_major_change;
   int32_T offset_new_value_diff;
   int16_T x_max_val;
   int16_T x_min_val;

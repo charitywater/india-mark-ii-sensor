@@ -41,7 +41,7 @@
 #include "version-git-info.h"
 #include "HW_TERM.h"
 
-#define MAX_STRING_SIZE         125
+#define MAX_STRING_SIZE         80
 
 void HW_TERM_Init(void);
 void HW_TERM_Print(uint8_t * p_str);
@@ -97,13 +97,13 @@ void HW_TERM_PrintVersionInfo(void)
     uint8_t result[MAX_STRING_SIZE];
 
     // Print version information
-    HW_TERM_PrintColor("\n\n*****************************************************\n", KGRN);
-    HW_TERM_PrintColor(" SSM APPLICATION\n", KCYN);
+    HW_TERM_Print("\n\n*****************************************************\n");
+    HW_TERM_Print(" SSM APPLICATION\n");
     sprintf((char *)result, " Release Version: %d.%d.%d\n", VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
-    HW_TERM_PrintColor(result, KCYN);
-    sprintf((char *)result, " Build Version: %s %s %s\n", GIT_BRANCH_NAME, GIT_COMMIT_HASH, BUILD_TIMESTAMP_UTC);
-    HW_TERM_PrintColor(result, KCYN);
-    HW_TERM_PrintColor("*****************************************************\n\n", KGRN);
+    HW_TERM_Print(result);
+    snprintf((char *)result, MAX_STRING_SIZE, " Build Version: %s %s %s\n", GIT_BRANCH_NAME, GIT_COMMIT_HASH, BUILD_TIMESTAMP_UTC);
+    HW_TERM_Print(result);
+    HW_TERM_Print("*****************************************************\n\n");
 }
 
 void HW_TERM_Init(void)
@@ -127,30 +127,26 @@ void HW_TERM_Print(uint8_t * p_str)
     }
 }
 
-// Print a null-terminated string to the terminal using color.
-// Available colors:
-//      - KNRM
-//      - KRED
-//      - KGRN
-//      - KYEL
-//      - KBLU
-//      - KMAG
-//      - KCYN
-//      - KWHT
-void HW_TERM_PrintColor(uint8_t * p_str, uint8_t * p_color)
-{
-    if ( HW_TERM_IsLoggingEnabled() == true )
-    {
-        uint8_t len = strlen((const char *)p_color);
-        uC_UART_Tx(p_color, len);
-
-        len = strlen((const char *)p_str);
-        uC_UART_Tx(p_str, len);
-
-        len = strlen(KNRM);
-        uC_UART_Tx(KNRM, len);
-    }
-}
+//// Print a null-terminated string to the terminal using color.
+//// Available colors:
+////      - KNRM
+////      - KRED
+////      - KGRN
+////      - KCYN
+//void HW_TERM_PrintColor(uint8_t * p_str, uint8_t * p_color)
+//{
+//    if ( HW_TERM_IsLoggingEnabled() == true )
+//    {
+//        uint8_t len = strlen((const char *)p_color);
+//        uC_UART_Tx(p_color, len);
+//
+//        len = strlen((const char *)p_str);
+//        uC_UART_Tx(p_str, len);
+//
+//        len = strlen(KNRM);
+//        uC_UART_Tx(KNRM, len);
+//    }
+//}
 
 
 void HW_TERM_ReportPadValues(void)
@@ -160,7 +156,8 @@ void HW_TERM_ReportPadValues(void)
 
     for(i=APP_WTR_LOWEST_PAD; i < APP_WTR_GetNumPads(); i++)
     {
-       sprintf((char *)str, "\n\rPad %s:   %d", APP_WTR_GetStrForPad(i), APP_WTR_GetPadValue(i));
+       //sprintf((char *)str, "\n\rPad %s:   %d", APP_WTR_GetStrForPad(i), APP_WTR_GetPadValue(i));
+       sprintf((char *)str, "\n\rPad %d:   %d", i+1, APP_WTR_GetPadValue(i));
        HW_TERM_Print(str);
     }
 }

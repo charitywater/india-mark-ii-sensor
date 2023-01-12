@@ -2,13 +2,14 @@
  * File: calculateWaterVolume.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:35
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:46
  */
 
 /* Include Files */
 #include "calculateWaterVolume.h"
 #include "checkWaterCalibration.h"
 #include "detectWaterChange.h"
+#include "promotePadStates.h"
 #include "waterCalibration.h"
 
 /* Custom Source Code */
@@ -53,6 +54,14 @@ typedef uint8_T Pad;
 
 /* Function Declarations */
 static void add_reason_code(ReasonCodes reason_code, ReasonCodes reason_codes[8]);
+static void add_to_buffer(int16_T pad_sample_pad1, int16_T pad_sample_pad2,
+  int16_T pad_sample_pad3, int16_T pad_sample_pad4, int16_T pad_sample_pad5,
+  int16_T pad_sample_pad6, int16_T pad_sample_pad7, int16_T pad_sample_pad8,
+  padFilteringData_t *pad_filtering_data, int16_T *pad_delta_data_pad1, int16_T *
+  pad_delta_data_pad2, int16_T *pad_delta_data_pad3, int16_T
+  *pad_delta_data_pad4, int16_T *pad_delta_data_pad5, int16_T
+  *pad_delta_data_pad6, int16_T *pad_delta_data_pad7, int16_T
+  *pad_delta_data_pad8);
 static void read_sample(uint16_T b_index, const uint16_T pad_window_blockA_pad1
   [20], const uint16_T pad_window_blockA_pad2[20], const uint16_T
   pad_window_blockA_pad3[20], const uint16_T pad_window_blockA_pad4[20], const
@@ -98,6 +107,360 @@ static void add_reason_code(ReasonCodes reason_code, ReasonCodes reason_codes[8]
         b_i++;
       }
     }
+  }
+}
+
+/*
+ * Arguments    : int16_T pad_sample_pad1
+ *                int16_T pad_sample_pad2
+ *                int16_T pad_sample_pad3
+ *                int16_T pad_sample_pad4
+ *                int16_T pad_sample_pad5
+ *                int16_T pad_sample_pad6
+ *                int16_T pad_sample_pad7
+ *                int16_T pad_sample_pad8
+ *                padFilteringData_t *pad_filtering_data
+ *                int16_T *pad_delta_data_pad1
+ *                int16_T *pad_delta_data_pad2
+ *                int16_T *pad_delta_data_pad3
+ *                int16_T *pad_delta_data_pad4
+ *                int16_T *pad_delta_data_pad5
+ *                int16_T *pad_delta_data_pad6
+ *                int16_T *pad_delta_data_pad7
+ *                int16_T *pad_delta_data_pad8
+ * Return Type  : void
+ */
+static void add_to_buffer(int16_T pad_sample_pad1, int16_T pad_sample_pad2,
+  int16_T pad_sample_pad3, int16_T pad_sample_pad4, int16_T pad_sample_pad5,
+  int16_T pad_sample_pad6, int16_T pad_sample_pad7, int16_T pad_sample_pad8,
+  padFilteringData_t *pad_filtering_data, int16_T *pad_delta_data_pad1, int16_T *
+  pad_delta_data_pad2, int16_T *pad_delta_data_pad3, int16_T
+  *pad_delta_data_pad4, int16_T *pad_delta_data_pad5, int16_T
+  *pad_delta_data_pad6, int16_T *pad_delta_data_pad7, int16_T
+  *pad_delta_data_pad8)
+{
+  int16_T pad1_max;
+  int16_T pad1_min;
+  int16_T pad2_max;
+  int16_T pad2_min;
+  int16_T pad3_max;
+  int16_T pad3_min;
+  int16_T pad4_max;
+  int16_T pad4_min;
+  int16_T pad5_max;
+  int16_T pad5_min;
+  int16_T pad6_max;
+  int16_T pad6_min;
+  int16_T pad7_max;
+  int16_T pad7_min;
+  int16_T pad8_max;
+  int16_T pad8_min;
+  int16_T i;
+  int16_T b_i;
+  int16_T c_i;
+
+  /*         %% */
+  /*  Note the buffer uses 1-7 to store the raw values and 8 to store the past delta point  */
+  /*         %% */
+  /*  If the buffer index is at 7 we add the new point, average and shift the */
+  /*  buffer and remain at index of 7 */
+  if (pad_filtering_data->buffer_idx == 5) {
+    /*  Add the newest point to the buffers */
+    pad_filtering_data->pad_1_buffer[4] = pad_sample_pad1;
+    pad_filtering_data->pad_2_buffer[4] = pad_sample_pad2;
+    pad_filtering_data->pad_3_buffer[4] = pad_sample_pad3;
+    pad_filtering_data->pad_4_buffer[4] = pad_sample_pad4;
+    pad_filtering_data->pad_5_buffer[4] = pad_sample_pad5;
+    pad_filtering_data->pad_6_buffer[4] = pad_sample_pad6;
+    pad_filtering_data->pad_7_buffer[4] = pad_sample_pad7;
+    pad_filtering_data->pad_8_buffer[4] = pad_sample_pad8;
+
+    /*  Set the initial values for the max and mins */
+    pad1_max = pad_filtering_data->pad_1_buffer[0];
+    pad1_min = pad_filtering_data->pad_1_buffer[0];
+    pad2_max = pad_filtering_data->pad_2_buffer[0];
+    pad2_min = pad_filtering_data->pad_2_buffer[0];
+    pad3_max = pad_filtering_data->pad_3_buffer[0];
+    pad3_min = pad_filtering_data->pad_3_buffer[0];
+    pad4_max = pad_filtering_data->pad_4_buffer[0];
+    pad4_min = pad_filtering_data->pad_4_buffer[0];
+    pad5_max = pad_filtering_data->pad_5_buffer[0];
+    pad5_min = pad_filtering_data->pad_5_buffer[0];
+    pad6_max = pad_filtering_data->pad_6_buffer[0];
+    pad6_min = pad_filtering_data->pad_6_buffer[0];
+    pad7_max = pad_filtering_data->pad_7_buffer[0];
+    pad7_min = pad_filtering_data->pad_7_buffer[0];
+    pad8_max = pad_filtering_data->pad_8_buffer[0];
+    pad8_min = pad_filtering_data->pad_8_buffer[0];
+
+    /*  Loop through current array and keep track of max/min values */
+    for (i = 0; i < 5; i++) {
+      if (pad_filtering_data->pad_1_buffer[i] > pad1_max) {
+        pad1_max = pad_filtering_data->pad_1_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_1_buffer[i] < pad1_min) {
+          pad1_min = pad_filtering_data->pad_1_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_2_buffer[i] > pad2_max) {
+        pad2_max = pad_filtering_data->pad_2_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_2_buffer[i] < pad2_min) {
+          pad2_min = pad_filtering_data->pad_2_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_3_buffer[i] > pad3_max) {
+        pad3_max = pad_filtering_data->pad_3_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_3_buffer[i] < pad3_min) {
+          pad3_min = pad_filtering_data->pad_3_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_4_buffer[i] > pad4_max) {
+        pad4_max = pad_filtering_data->pad_4_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_4_buffer[i] < pad4_min) {
+          pad4_min = pad_filtering_data->pad_4_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_5_buffer[i] > pad5_max) {
+        pad5_max = pad_filtering_data->pad_5_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_5_buffer[i] < pad5_min) {
+          pad5_min = pad_filtering_data->pad_5_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_6_buffer[i] > pad6_max) {
+        pad6_max = pad_filtering_data->pad_6_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_6_buffer[i] < pad6_min) {
+          pad6_min = pad_filtering_data->pad_6_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_7_buffer[i] > pad7_max) {
+        pad7_max = pad_filtering_data->pad_7_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_7_buffer[i] < pad7_min) {
+          pad7_min = pad_filtering_data->pad_7_buffer[i];
+        }
+      }
+
+      if (pad_filtering_data->pad_8_buffer[i] > pad8_max) {
+        pad8_max = pad_filtering_data->pad_8_buffer[i];
+      } else {
+        if (pad_filtering_data->pad_8_buffer[i] < pad8_min) {
+          pad8_min = pad_filtering_data->pad_8_buffer[i];
+        }
+      }
+    }
+
+    /*  Calculate the delta using the max and the min values and */
+    /*  average with the past delta value */
+    /*             %% PAD 1 DELTA AND AVERAGING */
+    if (pad_sample_pad1 - pad_filtering_data->pad_1_buffer[0] < 1) {
+      *pad_delta_data_pad1 = (pad1_min - pad1_max) +
+        pad_filtering_data->pad_1_buffer[5];
+    } else {
+      *pad_delta_data_pad1 = (pad1_max - pad1_min) +
+        pad_filtering_data->pad_1_buffer[5];
+    }
+
+    if (*pad_delta_data_pad1 < 0) {
+      *pad_delta_data_pad1 = 1 - *pad_delta_data_pad1;
+      *pad_delta_data_pad1 = -(int16_T)((uint16_T)*pad_delta_data_pad1 >> 1);
+    } else {
+      *pad_delta_data_pad1 = (int16_T)((uint16_T)(*pad_delta_data_pad1 + 1) >> 1);
+    }
+
+    /*             %% PAD 2 DELTA AND AVERAGING */
+    if (pad_sample_pad2 - pad_filtering_data->pad_2_buffer[0] < 1) {
+      *pad_delta_data_pad2 = (pad2_min - pad2_max) +
+        pad_filtering_data->pad_2_buffer[5];
+    } else {
+      *pad_delta_data_pad2 = (pad2_max - pad2_min) +
+        pad_filtering_data->pad_2_buffer[5];
+    }
+
+    if (*pad_delta_data_pad2 < 0) {
+      *pad_delta_data_pad2 = 1 - *pad_delta_data_pad2;
+      *pad_delta_data_pad2 = (int16_T)((uint16_T)*pad_delta_data_pad2 >> 1);
+      *pad_delta_data_pad2 = -*pad_delta_data_pad2;
+    } else {
+      *pad_delta_data_pad2 = (int16_T)((uint16_T)(*pad_delta_data_pad2 + 1) >> 1);
+    }
+
+    /*             %% PAD 3 DELTA AND AVERAGING                 */
+    if (pad_sample_pad3 - pad_filtering_data->pad_3_buffer[0] < 1) {
+      *pad_delta_data_pad3 = (pad3_min - pad3_max) +
+        pad_filtering_data->pad_3_buffer[5];
+    } else {
+      *pad_delta_data_pad3 = (pad3_max - pad3_min) +
+        pad_filtering_data->pad_3_buffer[5];
+    }
+
+    if (*pad_delta_data_pad3 < 0) {
+      *pad_delta_data_pad3 = 1 - *pad_delta_data_pad3;
+      *pad_delta_data_pad3 = (int16_T)((uint16_T)*pad_delta_data_pad3 >> 1);
+      *pad_delta_data_pad3 = -*pad_delta_data_pad3;
+    } else {
+      *pad_delta_data_pad3 = (int16_T)((uint16_T)(*pad_delta_data_pad3 + 1) >> 1);
+    }
+
+    /*             %% PAD 4 DELTA AND AVERAGING */
+    if (pad_sample_pad4 - pad_filtering_data->pad_4_buffer[0] < 1) {
+      *pad_delta_data_pad4 = (pad4_min - pad4_max) +
+        pad_filtering_data->pad_4_buffer[5];
+    } else {
+      *pad_delta_data_pad4 = (pad4_max - pad4_min) +
+        pad_filtering_data->pad_4_buffer[5];
+    }
+
+    if (*pad_delta_data_pad4 < 0) {
+      *pad_delta_data_pad4 = 1 - *pad_delta_data_pad4;
+      *pad_delta_data_pad4 = (int16_T)((uint16_T)*pad_delta_data_pad4 >> 1);
+      *pad_delta_data_pad4 = -*pad_delta_data_pad4;
+    } else {
+      *pad_delta_data_pad4 = (int16_T)((uint16_T)(*pad_delta_data_pad4 + 1) >> 1);
+    }
+
+    /*             %% PAD 5 DELTA AND AVERAGING */
+    if (pad_sample_pad5 - pad_filtering_data->pad_5_buffer[0] < 1) {
+      *pad_delta_data_pad5 = (pad5_min - pad5_max) +
+        pad_filtering_data->pad_5_buffer[5];
+    } else {
+      *pad_delta_data_pad5 = (pad5_max - pad5_min) +
+        pad_filtering_data->pad_5_buffer[5];
+    }
+
+    if (*pad_delta_data_pad5 < 0) {
+      *pad_delta_data_pad5 = 1 - *pad_delta_data_pad5;
+      *pad_delta_data_pad5 = (int16_T)((uint16_T)*pad_delta_data_pad5 >> 1);
+      *pad_delta_data_pad5 = -*pad_delta_data_pad5;
+    } else {
+      *pad_delta_data_pad5 = (int16_T)((uint16_T)(*pad_delta_data_pad5 + 1) >> 1);
+    }
+
+    /*             %% PAD 6 DELTA AND AVERAGING */
+    if (pad_sample_pad6 - pad_filtering_data->pad_6_buffer[0] < 1) {
+      *pad_delta_data_pad6 = (pad6_min - pad6_max) +
+        pad_filtering_data->pad_6_buffer[5];
+    } else {
+      *pad_delta_data_pad6 = (pad6_max - pad6_min) +
+        pad_filtering_data->pad_6_buffer[5];
+    }
+
+    if (*pad_delta_data_pad6 < 0) {
+      *pad_delta_data_pad6 = 1 - *pad_delta_data_pad6;
+      *pad_delta_data_pad6 = (int16_T)((uint16_T)*pad_delta_data_pad6 >> 1);
+      *pad_delta_data_pad6 = -*pad_delta_data_pad6;
+    } else {
+      *pad_delta_data_pad6 = (int16_T)((uint16_T)(*pad_delta_data_pad6 + 1) >> 1);
+    }
+
+    /*             %% PAD 7 DELTA AND AVERAGING */
+    if (pad_sample_pad7 - pad_filtering_data->pad_7_buffer[0] < 1) {
+      *pad_delta_data_pad7 = (pad7_min - pad7_max) +
+        pad_filtering_data->pad_7_buffer[5];
+    } else {
+      *pad_delta_data_pad7 = (pad7_max - pad7_min) +
+        pad_filtering_data->pad_7_buffer[5];
+    }
+
+    if (*pad_delta_data_pad7 < 0) {
+      *pad_delta_data_pad7 = 1 - *pad_delta_data_pad7;
+      *pad_delta_data_pad7 = (int16_T)((uint16_T)*pad_delta_data_pad7 >> 1);
+      *pad_delta_data_pad7 = -*pad_delta_data_pad7;
+    } else {
+      *pad_delta_data_pad7 = (int16_T)((uint16_T)(*pad_delta_data_pad7 + 1) >> 1);
+    }
+
+    /*             %% PAD 2 DELTA AND AVERAGING */
+    if (pad_sample_pad8 - pad_filtering_data->pad_8_buffer[0] < 1) {
+      *pad_delta_data_pad8 = (pad8_min - pad8_max) +
+        pad_filtering_data->pad_8_buffer[5];
+    } else {
+      *pad_delta_data_pad8 = (pad8_max - pad8_min) +
+        pad_filtering_data->pad_8_buffer[5];
+    }
+
+    if (*pad_delta_data_pad8 < 0) {
+      *pad_delta_data_pad8 = 1 - *pad_delta_data_pad8;
+      *pad_delta_data_pad8 = (int16_T)((uint16_T)*pad_delta_data_pad8 >> 1);
+      *pad_delta_data_pad8 = -*pad_delta_data_pad8;
+    } else {
+      *pad_delta_data_pad8 = (int16_T)((uint16_T)(*pad_delta_data_pad8 + 1) >> 1);
+    }
+
+    /*  Set the current delta to the final value in the buffer to */
+    /*  average the next delta point */
+    pad_filtering_data->pad_1_buffer[5] = *pad_delta_data_pad1;
+    pad_filtering_data->pad_2_buffer[5] = *pad_delta_data_pad2;
+    pad_filtering_data->pad_3_buffer[5] = *pad_delta_data_pad3;
+    pad_filtering_data->pad_4_buffer[5] = *pad_delta_data_pad4;
+    pad_filtering_data->pad_5_buffer[5] = *pad_delta_data_pad5;
+    pad_filtering_data->pad_6_buffer[5] = *pad_delta_data_pad6;
+    pad_filtering_data->pad_7_buffer[5] = *pad_delta_data_pad7;
+    pad_filtering_data->pad_8_buffer[5] = *pad_delta_data_pad8;
+
+    /*  Sum the data before bitshifting and shift the buffer */
+    for (b_i = 0; b_i < 5; b_i++) {
+      if (b_i + 1 > 1) {
+        c_i = b_i - 1;
+        pad_filtering_data->pad_1_buffer[c_i] = pad_filtering_data->
+          pad_1_buffer[b_i];
+        pad_filtering_data->pad_2_buffer[c_i] = pad_filtering_data->
+          pad_2_buffer[b_i];
+        pad_filtering_data->pad_3_buffer[c_i] = pad_filtering_data->
+          pad_3_buffer[b_i];
+        pad_filtering_data->pad_4_buffer[c_i] = pad_filtering_data->
+          pad_4_buffer[b_i];
+        pad_filtering_data->pad_5_buffer[c_i] = pad_filtering_data->
+          pad_5_buffer[b_i];
+        pad_filtering_data->pad_6_buffer[c_i] = pad_filtering_data->
+          pad_6_buffer[b_i];
+        pad_filtering_data->pad_7_buffer[c_i] = pad_filtering_data->
+          pad_7_buffer[b_i];
+        pad_filtering_data->pad_8_buffer[c_i] = pad_filtering_data->
+          pad_8_buffer[b_i];
+      }
+    }
+  } else {
+    /*  Increment the buffer variable first */
+    pad_filtering_data->buffer_idx++;
+
+    /*  Add the newest point to the buffers */
+    pad_filtering_data->pad_1_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad1;
+    pad_filtering_data->pad_2_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad2;
+    pad_filtering_data->pad_3_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad3;
+    pad_filtering_data->pad_4_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad4;
+    pad_filtering_data->pad_5_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad5;
+    pad_filtering_data->pad_6_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad6;
+    pad_filtering_data->pad_7_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad7;
+    pad_filtering_data->pad_8_buffer[pad_filtering_data->buffer_idx - 1] =
+      pad_sample_pad8;
+
+    /*  Return current data without filtering */
+    *pad_delta_data_pad1 = 0;
+    *pad_delta_data_pad2 = 0;
+    *pad_delta_data_pad3 = 0;
+    *pad_delta_data_pad4 = 0;
+    *pad_delta_data_pad5 = 0;
+    *pad_delta_data_pad6 = 0;
+    *pad_delta_data_pad7 = 0;
+    *pad_delta_data_pad8 = 0;
   }
 }
 
@@ -253,24 +616,22 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
   int16_T b_expl_temp;
   int16_T c_expl_temp;
   int16_T d_expl_temp;
-  int16_T e_expl_temp;
+  int16_T past_present_sample_pad5;
   int16_T past_present_sample_pad6;
   int16_T past_present_sample_pad7;
   int16_T past_present_sample_pad8;
-  uint8_T past_sample_vol_success;
-  int16_T past_vol_sample_pad1;
-  int16_T past_vol_sample_pad2;
-  int16_T past_vol_sample_pad3;
-  int16_T past_vol_sample_pad4;
-  int16_T past_vol_sample_pad5;
-  int16_T past_vol_sample_pad6;
-  int16_T past_vol_sample_pad7;
-  int16_T past_vol_sample_pad8;
-  int32_T present_pad8_diff;
-  int32_T present_diff_sum;
-  int32_T vol_pad7_diff;
-  int32_T vol_pad8_diff;
-  uint8_T calibration_reset;
+  int16_T delta_sample_pad1;
+  int16_T delta_sample_pad2;
+  int16_T delta_sample_pad3;
+  int16_T delta_sample_pad4;
+  int16_T delta_sample_pad5;
+  int16_T delta_sample_pad6;
+  int16_T delta_sample_pad7;
+  int16_T delta_sample_pad8;
+  int16_T present_pad6_diff;
+  int16_T present_pad7_diff;
+  int16_T present_pad8_diff;
+  int16_T present_diff_sum;
   uint8_T OA_sample_success;
   int16_T OA_sample_pad1;
   int16_T OA_sample_pad2;
@@ -280,6 +641,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
   int16_T OA_sample_pad6;
   int16_T OA_sample_pad7;
   int16_T OA_sample_pad8;
+  uint8_T calibration_reset;
   uint8_T water_calibrated;
   uint8_T neg_delta;
   uint8_T small_delta_reset;
@@ -318,40 +680,41 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
                 &current_sample_pad7, &current_sample_pad8);
 
     /*  Get past sample using the water present offset */
-    read_sample(idx + 9U, pad_window->blockA.pad1, pad_window->blockA.pad2,
+    read_sample(idx + 11U, pad_window->blockA.pad1, pad_window->blockA.pad2,
                 pad_window->blockA.pad3, pad_window->blockA.pad4,
                 pad_window->blockA.pad5, pad_window->blockA.pad6,
                 pad_window->blockA.pad7, pad_window->blockA.pad8,
                 &pad_window->blockB, &pad_window->blockOA, &pad_window->blockOB,
                 pad_window->read_window, &past_sample_present_success,
                 &expl_temp, &b_expl_temp, &c_expl_temp, &d_expl_temp,
-                &e_expl_temp, &past_present_sample_pad6,
+                &past_present_sample_pad5, &past_present_sample_pad6,
                 &past_present_sample_pad7, &past_present_sample_pad8);
 
-    /*  Get past sample using the volume offset */
-    read_sample(idx + 46U, pad_window->blockA.pad1, pad_window->blockA.pad2,
-                pad_window->blockA.pad3, pad_window->blockA.pad4,
-                pad_window->blockA.pad5, pad_window->blockA.pad6,
-                pad_window->blockA.pad7, pad_window->blockA.pad8,
-                &pad_window->blockB, &pad_window->blockOA, &pad_window->blockOB,
-                pad_window->read_window, &past_sample_vol_success,
-                &past_vol_sample_pad1, &past_vol_sample_pad2,
-                &past_vol_sample_pad3, &past_vol_sample_pad4,
-                &past_vol_sample_pad5, &past_vol_sample_pad6,
-                &past_vol_sample_pad7, &past_vol_sample_pad8);
-    if ((curr_sample_success != 0) && (past_sample_present_success != 0) &&
-        (past_sample_vol_success != 0)) {
+    /*      % Get past sample using the volume offset */
+    /*      if idx > Constants.WTR_VOLUME_DIFF_OFFSET */
+    /*          past_idx = idx - Constants.WTR_VOLUME_DIFF_OFFSET; */
+    /*      else */
+    /*          past_idx = uint16(1); */
+    /*      end */
+    /*      [past_sample_vol_success, past_vol_sample] = read_sample(past_idx, pad_window); */
+    if ((curr_sample_success != 0) && (past_sample_present_success != 0)) {
       if (algo_data->accum_processed_sample_cnt < MAX_int32_T) {
         algo_data->accum_processed_sample_cnt++;
       }
 
-      present_pad8_diff = (int32_T)current_sample_pad8 -
-        past_present_sample_pad8;
-      present_diff_sum = ((((int32_T)current_sample_pad6 -
-                            past_present_sample_pad6) + current_sample_pad7) -
-                          past_present_sample_pad7) + present_pad8_diff;
-      vol_pad7_diff = (int32_T)current_sample_pad7 - past_vol_sample_pad7;
-      vol_pad8_diff = (int32_T)current_sample_pad8 - past_vol_sample_pad8;
+      add_to_buffer(current_sample_pad1, current_sample_pad2,
+                    current_sample_pad3, current_sample_pad4,
+                    current_sample_pad5, current_sample_pad6,
+                    current_sample_pad7, current_sample_pad8,
+                    &algo_data->delta_buffer, &delta_sample_pad1,
+                    &delta_sample_pad2, &delta_sample_pad3, &delta_sample_pad4,
+                    &delta_sample_pad5, &delta_sample_pad6, &delta_sample_pad7,
+                    &delta_sample_pad8);
+      present_pad6_diff = current_sample_pad6 - past_present_sample_pad6;
+      present_pad7_diff = current_sample_pad7 - past_present_sample_pad7;
+      present_pad8_diff = current_sample_pad8 - past_present_sample_pad8;
+      present_diff_sum = (present_pad6_diff + present_pad7_diff) +
+        present_pad8_diff;
       if (algo_data->algo_state == b_water_present) {
         /*  Increment the open air counter until we find a new OA value */
         if (algo_data->OA_counter < MAX_uint16_T) {
@@ -362,7 +725,9 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
 
         /*  Detect the front of the water ON point */
         /*  These tend to be high frequency (high difference from point to point) */
-        if ((present_diff_sum <= -12L) || (present_pad8_diff <= -5L)) {
+        if ((present_diff_sum <= -13) || (present_pad8_diff <= -7) ||
+            (present_pad7_diff <= -7) || (present_pad6_diff <= -7) ||
+            (current_sample_pad5 - past_present_sample_pad5 <= -7)) {
           algo_data->present = 1U;
           algo_data->algo_state = water_volume;
 
@@ -442,20 +807,17 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
         }
 
         /*  Pad present states using differential approach */
-        detectWaterChange((int32_T)current_sample_pad1 - past_vol_sample_pad1,
-                          &algo_data->pad1_present, 10U);
-        detectWaterChange((int32_T)current_sample_pad2 - past_vol_sample_pad2,
-                          &algo_data->pad2_present, 20U);
-        detectWaterChange((int32_T)current_sample_pad3 - past_vol_sample_pad3,
-                          &algo_data->pad3_present, 30U);
-        detectWaterChange((int32_T)current_sample_pad4 - past_vol_sample_pad4,
-                          &algo_data->pad4_present, 40U);
-        detectWaterChange((int32_T)current_sample_pad5 - past_vol_sample_pad5,
-                          &algo_data->pad5_present, 50U);
-        detectWaterChange((int32_T)current_sample_pad6 - past_vol_sample_pad6,
-                          &algo_data->pad6_present, 60U);
-        detectWaterChange(vol_pad7_diff, &algo_data->pad7_present, 70U);
-        detectWaterChange(vol_pad8_diff, &algo_data->pad8_present, 80U);
+        detectWaterChange(delta_sample_pad1, &algo_data->pad1_present, 20U);
+        detectWaterChange(delta_sample_pad2, &algo_data->pad2_present, 30U);
+        detectWaterChange(delta_sample_pad3, &algo_data->pad3_present, 40U);
+        detectWaterChange(delta_sample_pad4, &algo_data->pad4_present, 50U);
+        detectWaterChange(delta_sample_pad5, &algo_data->pad5_present, 60U);
+        detectWaterChange(delta_sample_pad6, &algo_data->pad6_present, 70U);
+        detectWaterChange(delta_sample_pad7, &algo_data->pad7_present, 80U);
+        detectWaterChange(delta_sample_pad8, &algo_data->pad8_present, 90U);
+
+        /*  Update the pad states based on previous resulsts */
+        promotePadStates(algo_data);
 
         /*  Only check the calibration every so often */
         if (check_cal_counter == 20) {
@@ -502,7 +864,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad1:
             calib_water_height = 0;
             if ((water_calib->pad_1_calib_done == 1) && (algo_data->pad1_OA -
-                 current_sample_pad1 > water_calib->pad_1_calib[0] - 6)) {
+                 current_sample_pad1 > water_calib->pad_1_calib[0] - 5)) {
               calib_water_height = 262;
             }
 
@@ -574,7 +936,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad2:
             calib_water_height = 0;
             if ((water_calib->pad_2_calib_done == 1) && (algo_data->pad2_OA -
-                 current_sample_pad2 > water_calib->pad_2_calib[0] - 6)) {
+                 current_sample_pad2 > water_calib->pad_2_calib[0] - 5)) {
               calib_water_height = 229;
             }
 
@@ -640,7 +1002,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad3:
             calib_water_height = 0;
             if ((water_calib->pad_3_calib_done == 1) && (algo_data->pad3_OA -
-                 current_sample_pad3 > water_calib->pad_3_calib[0] - 6)) {
+                 current_sample_pad3 > water_calib->pad_3_calib[0] - 5)) {
               calib_water_height = 197;
             }
 
@@ -700,7 +1062,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad4:
             calib_water_height = 0;
             if ((water_calib->pad_4_calib_done == 1) && (algo_data->pad4_OA -
-                 current_sample_pad4 > water_calib->pad_4_calib[0] - 6)) {
+                 current_sample_pad4 > water_calib->pad_4_calib[0] - 5)) {
               calib_water_height = 164;
             }
 
@@ -754,7 +1116,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad5:
             calib_water_height = 0;
             if ((water_calib->pad_5_calib_done == 1) && (algo_data->pad5_OA -
-                 current_sample_pad5 > water_calib->pad_5_calib[0] - 6)) {
+                 current_sample_pad5 > water_calib->pad_5_calib[0] - 5)) {
               calib_water_height = 131;
             }
 
@@ -802,7 +1164,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad6:
             calib_water_height = 0;
             if ((water_calib->pad_6_calib_done == 1) && (algo_data->pad6_OA -
-                 current_sample_pad6 > water_calib->pad_6_calib[0] - 6)) {
+                 current_sample_pad6 > water_calib->pad_6_calib[0] - 5)) {
               calib_water_height = 98;
             }
 
@@ -844,7 +1206,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            case b_pad7:
             calib_water_height = 0;
             if ((water_calib->pad_7_calib_done == 1) && (algo_data->pad7_OA -
-                 current_sample_pad7 > water_calib->pad_7_calib[0] - 6)) {
+                 current_sample_pad7 > water_calib->pad_7_calib[0] - 5)) {
               calib_water_height = 66;
             }
 
@@ -879,7 +1241,7 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
            default:
             calib_water_height = 0;
             if ((water_calib->pad_8_calib_done == 1) && (algo_data->pad8_OA -
-                 current_sample_pad8 > water_calib->pad_8_calib[0] - 6)) {
+                 current_sample_pad8 > water_calib->pad_8_calib[0] - 5)) {
               calib_water_height = 33;
             }
 
@@ -906,8 +1268,8 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
         /*  Look for water not present */
         /*  Check for a period of stable differential on the bottom two pads - this is when the pad 7, 8 differential */
         /*  values are small for a while - keep the water height at pad 8 for the duration this time */
-        if ((water_height == 0) && (vol_pad7_diff < 3L) && (vol_pad8_diff < 3L))
-        {
+        if ((water_height == 0) && (delta_sample_pad7 < 3) && (delta_sample_pad8
+             < 3)) {
           /*  Increment the not present counter */
           if (algo_data->not_present_counter < MAX_uint16_T) {
             algo_data->not_present_counter++;
@@ -942,23 +1304,23 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
         /*  Detect the "back" of the water OFF point - this is the closest point when the water */
         /*  is only dribbling */
         b_water_not_present = 0U;
-        if (present_diff_sum >= 30L) {
+        if (present_diff_sum >= 15) {
           algo_data->water_stopped = 1U;
         }
 
         /*  Reset water stopped flag if we get down to average again */
-        if ((present_diff_sum < 0L) && (algo_data->water_stopped != 0)) {
+        if ((present_diff_sum < 0) && (algo_data->water_stopped != 0)) {
           algo_data->pad_8_stop_flag = 0U;
           algo_data->water_stopped = 0U;
         }
 
         /*  Look for pad 8 to change significantly */
-        if ((algo_data->water_stopped != 0) && (present_pad8_diff >= 7L)) {
+        if ((algo_data->water_stopped != 0) && (present_pad8_diff >= 6)) {
           algo_data->pad_8_stop_flag = 1U;
         }
 
         /*  Set water stopped if all conditions are met */
-        if ((present_diff_sum < 3L) && (algo_data->water_stopped != 0) &&
+        if ((present_diff_sum < 4) && (algo_data->water_stopped != 0) &&
             (algo_data->pad_8_stop_flag != 0)) {
           b_water_not_present = 1U;
         }
@@ -1013,7 +1375,8 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
             /*  Calculate the scaler (Y = b - mx , x = no_change_percentage) */
             /*  Calculate the water volume */
             session_volume = (int16_T)((algo_data->water_int_value *
-              ((5368709120LL - 819LL * (a << 15L)) >> 15L) + 536870912LL) >> 30L);
+              ((11811160064LL - 3506LL * (a << 15L)) >> 15L) + 536870912LL) >>
+              30L);
           }
 
           /*  Debug */
@@ -1022,7 +1385,6 @@ void calculateWaterVolume(waterAlgoData_t *algo_data, waterCalibration_t
             algo_data->water_volume_sum += session_volume;
           } else {
             algo_data->water_volume_sum = MAX_int32_T;
-            add_reason_code(water_volume_capped, reason_codes);
           }
 
           /*  Session ended so move to water present state */

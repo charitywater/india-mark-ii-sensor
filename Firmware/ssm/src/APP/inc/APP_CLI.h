@@ -32,6 +32,6 @@
 extern void APP_CLI_Periodic(void);
 extern void APP_CLI_Init(void);
 extern void APP_CLI_Print(uint8_t * p_str);
-extern bool APP_CLI_CollectingData(void);
+//extern bool APP_CLI_CollectingData(void);
 
 #endif /* APP_CLI_H */

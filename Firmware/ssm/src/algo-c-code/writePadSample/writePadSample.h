@@ -2,7 +2,7 @@
  * File: writePadSample.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:56:52
+ * C/C++ source code generated on  : 27-Oct-2022 08:08:32
  */
 
 #ifndef WRITEPADSAMPLE_H

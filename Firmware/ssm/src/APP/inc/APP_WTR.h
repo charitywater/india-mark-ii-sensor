@@ -42,9 +42,9 @@ typedef enum
     APP_WTR_LOWEST_PAD = CAPTIVATE_RX_CHANNEL2
 }APP_WTR_PAD_CHANNELS_T;
 
-extern uint8_t APP_WTR_CheckLevel(void);
+//extern uint8_t APP_WTR_CheckLevel(void);
 extern uint16_t APP_WTR_GetPadValue(APP_WTR_PAD_CHANNELS_T pad);
-extern const char * APP_WTR_GetStrForPad(APP_WTR_PAD_CHANNELS_T pos);
+//extern const char * APP_WTR_GetStrForPad(APP_WTR_PAD_CHANNELS_T pos);
 extern void APP_WTR_CollectData(uint32_t ticks);
 
 #define APP_WTR_GetNumPads() (APP_WTR_NUM_PADS)

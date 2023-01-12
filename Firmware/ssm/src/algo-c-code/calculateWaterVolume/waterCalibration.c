@@ -2,7 +2,7 @@
  * File: waterCalibration.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:35
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:46
  */
 
 /* Include Files */
@@ -313,12 +313,12 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     /*  Check for negative delta error code */
     /*     %% Check to see if calibration complete */
     /*     %% Pad 1 */
-    if (water_calib->pad_1_calib[1] >= 30) {
+    if (water_calib->pad_1_calib[1] >= 50) {
       water_calib->pad_1_calib_done = 1U;
       *water_calibrated = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_1_calib[0] < 10) {
+      if (water_calib->pad_1_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -348,11 +348,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 2 */
-    if (water_calib->pad_2_calib[1] >= 30) {
+    if (water_calib->pad_2_calib[1] >= 50) {
       water_calib->pad_2_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_2_calib[0] < 10) {
+      if (water_calib->pad_2_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -382,11 +382,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 3 */
-    if (water_calib->pad_3_calib[1] >= 30) {
+    if (water_calib->pad_3_calib[1] >= 50) {
       water_calib->pad_3_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_3_calib[0] < 10) {
+      if (water_calib->pad_3_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -416,11 +416,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 4 */
-    if (water_calib->pad_4_calib[1] >= 30) {
+    if (water_calib->pad_4_calib[1] >= 50) {
       water_calib->pad_4_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_4_calib[0] < 10) {
+      if (water_calib->pad_4_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -450,11 +450,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 5 */
-    if (water_calib->pad_5_calib[1] >= 30) {
+    if (water_calib->pad_5_calib[1] >= 50) {
       water_calib->pad_5_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_5_calib[0] < 10) {
+      if (water_calib->pad_5_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -484,11 +484,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 6 */
-    if (water_calib->pad_6_calib[1] >= 30) {
+    if (water_calib->pad_6_calib[1] >= 50) {
       water_calib->pad_6_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_6_calib[0] < 10) {
+      if (water_calib->pad_6_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -518,11 +518,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 7 */
-    if (water_calib->pad_7_calib[1] >= 30) {
+    if (water_calib->pad_7_calib[1] >= 50) {
       water_calib->pad_7_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_7_calib[0] < 10) {
+      if (water_calib->pad_7_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;
@@ -552,11 +552,11 @@ void waterCalibration(waterAlgoData_t *prev_water_data, waterCalibration_t
     }
 
     /*     %% Pad 8 */
-    if (water_calib->pad_8_calib[1] >= 30) {
+    if (water_calib->pad_8_calib[1] >= 50) {
       water_calib->pad_8_calib_done = 1U;
 
       /*  Check for error case */
-      if (water_calib->pad_8_calib[0] < 10) {
+      if (water_calib->pad_8_calib[0] < 7) {
         *small_delta_reset = 1U;
         water_calib->pad_1_calib[0] = 0;
         water_calib->pad_2_calib[0] = 0;

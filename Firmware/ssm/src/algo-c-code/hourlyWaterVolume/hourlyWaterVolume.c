@@ -2,7 +2,7 @@
  * File: hourlyWaterVolume.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:16
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:20
  */
 
 /* Include Files */
@@ -66,8 +66,8 @@ void hourlyWaterVolume(waterAlgoData_t *algo_data, pumpUsage_t *pump_usage,
 
       /*  Calculate the scaler (Y = b - mx , x = no_change_percentage) */
       /*  Calculate the water volume */
-      session_volume = (int16_T)((algo_data->water_int_value * ((5368709120LL -
-        819LL * (a << 15L)) >> 15L) + 536870912LL) >> 30L);
+      session_volume = (int16_T)((algo_data->water_int_value * ((11811160064LL -
+        3506LL * (a << 15L)) >> 15L) + 536870912LL) >> 30L);
     }
 
     /*  Display the plots if the target is the mex file */
@@ -83,7 +83,6 @@ void hourlyWaterVolume(waterAlgoData_t *algo_data, pumpUsage_t *pump_usage,
     hourly_water_info->volume = algo_data->water_volume_sum + session_volume;
   } else {
     hourly_water_info->volume = MAX_int32_T;
-    *reason_code = water_volume_capped;
   }
 
   /*  Compute the pump usage - this can be used to indicate the quality of the */

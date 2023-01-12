@@ -2,7 +2,7 @@
  * File: initializeMagCalibration.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:59:20
+ * C/C++ source code generated on  : 27-Oct-2022 08:11:44
  */
 
 /* Include Files */
@@ -47,12 +47,13 @@ void initializeMagCalibration(magCalibration_t *mag_calib)
   mag_calib->window_calib.mag_pres_neg_win_cnt = 0U;
   mag_calib->window_calib.mag_pres_win_cnt = 0U;
   mag_calib->window_calib.orient_win_cnt = 0U;
-  mag_calib->window_calib.orient_xy_sync_window_cnt = 0U;
-  mag_calib->window_calib.orient_xy_nosync_window_cnt = 0U;
-  mag_calib->window_calib.orient_xz_sync_window_cnt = 0U;
-  mag_calib->window_calib.orient_xz_nosync_window_cnt = 0U;
+  mag_calib->window_calib.orient_reset_cnt = 0U;
+  mag_calib->window_calib.orient_cal_reset_cnt = 0U;
+  mag_calib->window_calib.orient_xy_sync_window_cnt = 0UL;
+  mag_calib->window_calib.orient_xy_nosync_window_cnt = 0UL;
+  mag_calib->window_calib.orient_xz_sync_window_cnt = 0UL;
+  mag_calib->window_calib.orient_xz_nosync_window_cnt = 0UL;
   mag_calib->window_calib.offset_win_cnt = 0U;
-  mag_calib->window_calib.offset_major_change = 0U;
   mag_calib->window_calib.offset_new_value_diff = 0L;
   mag_calib->window_calib.x_max_val = MIN_int16_T;
   mag_calib->window_calib.x_min_val = MAX_int16_T;

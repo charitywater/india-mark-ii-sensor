@@ -108,7 +108,7 @@ void HW_MAG_InitBusAndDevice(void)
 
     if (whoAmIReg != LIS2MDL_ID)
     {
-        HW_TERM_PrintColor("HW_MAG: ERROR. Unable to communicate with magnetometer.\n", KRED);
+        HW_TERM_Print("HW_MAG: ERROR. Unable to communicate with magnetometer.\n");
     }
     else
     {

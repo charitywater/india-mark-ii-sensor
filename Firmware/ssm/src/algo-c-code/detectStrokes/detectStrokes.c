@@ -2,7 +2,7 @@
  * File: detectStrokes.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 12:00:23
+ * C/C++ source code generated on  : 27-Oct-2022 08:13:00
  */
 
 /* Include Files */

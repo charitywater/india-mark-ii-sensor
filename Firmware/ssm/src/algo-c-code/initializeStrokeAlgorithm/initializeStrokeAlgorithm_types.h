@@ -2,7 +2,7 @@
  * File: initializeStrokeAlgorithm_types.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:59:32
+ * C/C++ source code generated on  : 27-Oct-2022 08:11:58
  */
 
 #ifndef INITIALIZESTROKEALGORITHM_TYPES_H

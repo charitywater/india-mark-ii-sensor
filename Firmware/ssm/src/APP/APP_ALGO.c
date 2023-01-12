@@ -331,7 +331,7 @@ static void xGetLatestSamples(bool activeSampling)
             //if we have too many missed samples, flag the issue
             if ( staticDataCount > STATIC_SAMPLE_COUNT_MAX )
             {
-                HW_TERM_PrintColor("\n\rSTATIC CAP SENSE DATA\n\r",KRED);
+                HW_TERM_Print("\n\rSTATIC CAP SENSE DATA\n\r");
 
                 APP_indicateError(CAP_SENSE_NO_DATA);
                 staticDataCount = 0;
@@ -472,20 +472,20 @@ static void xHandleError(ReasonCodes reason)
             tempErrorBits |= WATER_STANDING;
             break;
 
-        case water_flow_clogged_pump:
-            tempErrorBits |= WATER_CLOGGED_PUMP;
+        case mag_calib_xy_cnt_low:
+            tempErrorBits |= CALIB_XY_CNT_LOW;
             break;
 
-        case water_volume_capped:
-            tempErrorBits |= WATER_VOLUME_CAPPED;
+        case mag_calib_xz_cnt_low:
+            tempErrorBits |= CALIB_XZ_CNT_LOW;
+            break;
+
+        case mag_calib_bad_placement_wobble:
+            tempErrorBits |= CALIB_BAD_PLACEMENT;
             break;
 
         case mag_calib_new_offset_value_l1:
             tempErrorBits |= CALIB_NEW_OFFSET_VAL_1;
-            break;
-
-        case mag_calib_new_offset_value_l2:
-            tempErrorBits |= CALIB_NEW_OFFSET_VAL_2;
             break;
     }
 

@@ -354,7 +354,7 @@ bool HW_RTC_GetTime(uint8_t *  p_10_ms,
 
     if (xVerifyTime(*p_10_ms, *p_seconds, *p_minutes, *p_hours, *p_day_of_week, *p_date, *p_month, *p_year) != true)
     {
-        HW_TERM_PrintColor("HW_RTC: Bad time read from device.\n", KRED);
+        HW_TERM_Print("HW_RTC: Bad time read from device.\n");
 
         *p_10_ms = 0;
         *p_seconds = 0;
@@ -536,17 +536,17 @@ bool HW_RTC_SetTime(uint8_t _10_ms,
             if (uC_I2C_WriteMulti(HW_RTC_SLAVE_ADDR, wbuf, SET_TIME_BUF_SIZE, false) == true)    // Send it as a multi-byte transmission.
             {
                 time_good = true;
-                HW_TERM_PrintColor("HW_RTC: Time set\n", KGRN);
+                HW_TERM_Print("HW_RTC: Time set\n");
             }
             else
             {
-                HW_TERM_PrintColor("HW_RTC: Error setting time \n", KRED);
+                HW_TERM_Print("HW_RTC: Error setting time \n");
             }
         }
 
         if ( time_good == false )
         {
-            HW_TERM_PrintColor("HW_RTC: ERROR.  Could not set time.\n", KRED);
+            HW_TERM_Print("HW_RTC: ERROR.  Could not set time.\n");
             APP_indicateError(RTC_COMM_ERROR);
         }
     }

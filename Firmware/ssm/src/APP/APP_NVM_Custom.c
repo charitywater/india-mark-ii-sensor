@@ -400,12 +400,12 @@ static bool CheckDeviceInfo(uint8_t map_index)
     // Confirm the expected NVM version.
     if (((APP_NVM_DEVICE_INFO_T *)p_buf)->nvm_version == APP_NVM_VERSION)
     {
-        HW_TERM_PrintColor("NVM version match.\n", KGRN);
+        HW_TERM_Print("NVM version match.\n");
     }
     else
     {
         section_good = false;
-        HW_TERM_PrintColor("NVM version mismatch!\n", KRED);
+        HW_TERM_Print("NVM version mismatch!\n");
     }
 
     if (APP_NVM_VerifyChecksum(buf, (sizeof(APP_NVM_DEVICE_INFO_T) - 1), (((APP_NVM_DEVICE_INFO_T *)p_buf)->checksum)) != true)

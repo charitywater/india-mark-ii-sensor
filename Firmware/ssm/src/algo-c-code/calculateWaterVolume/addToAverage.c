@@ -2,7 +2,7 @@
  * File: addToAverage.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:35
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:46
  */
 
 /* Include Files */
@@ -75,14 +75,14 @@ void addToAverage(int16_T cal_index, int16_T cal_value, int16_T current, int16_T
   /*  temp variable */
   /*  Case to check for bad calibration value */
   numerator = open_air - current;
-  if (numerator <= 10) {
+  if (numerator <= 7) {
     *result = cal_index;
     *b_index = cal_index - 1;
     *bad_cal_val = 1U;
   } else if (cal_index == 1) {
     *result = numerator;
     *b_index = 1;
-  } else if ((cal_index > 1) && (cal_index <= 30)) {
+  } else if ((cal_index > 1) && (cal_index <= 50)) {
     /*  Math to add current point to average */
     /*  Function to add additional value to an idiivde to round up a number */
     mult_result2 = numerator / cal_index;
@@ -92,10 +92,10 @@ void addToAverage(int16_T cal_index, int16_T cal_value, int16_T current, int16_T
 
     *result = (cal_index - 1) * cal_value / cal_index + mult_result2;
     *b_index = cal_index;
-  } else if (cal_index > 30) {
+  } else if (cal_index > 50) {
     /* limit max of 20 calibration points */
     *result = cal_value;
-    *b_index = 30;
+    *b_index = 50;
   } else {
     /*  SHouldn't get here but reset to zero if error */
     *result = 0;

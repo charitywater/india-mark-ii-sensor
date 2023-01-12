@@ -2,7 +2,7 @@
  * File: initializeWaterAlgorithm_types.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:57:44
+ * C/C++ source code generated on  : 27-Oct-2022 08:09:38
  */
 
 #ifndef INITIALIZEWATERALGORITHM_TYPES_H
@@ -48,14 +48,14 @@ typedef uint8_T PresentType;
 
 typedef struct {
   uint8_T buffer_idx;
-  int16_T pad_1_buffer[8];
-  int16_T pad_2_buffer[8];
-  int16_T pad_3_buffer[8];
-  int16_T pad_4_buffer[8];
-  int16_T pad_5_buffer[8];
-  int16_T pad_6_buffer[8];
-  int16_T pad_7_buffer[8];
-  int16_T pad_8_buffer[8];
+  int16_T pad_1_buffer[6];
+  int16_T pad_2_buffer[6];
+  int16_T pad_3_buffer[6];
+  int16_T pad_4_buffer[6];
+  int16_T pad_5_buffer[6];
+  int16_T pad_6_buffer[6];
+  int16_T pad_7_buffer[6];
+  int16_T pad_8_buffer[6];
 } padFilteringData_t;
 
 #endif                                 /*typedef_padFilteringData_t*/
@@ -122,6 +122,7 @@ typedef struct {
   uint8_T water_cal_error_count;
   uint16_T not_present_counter;
   uint16_T OA_counter;
+  padFilteringData_t delta_buffer;
   AlgoState algo_state;
 } waterAlgoData_t;
 

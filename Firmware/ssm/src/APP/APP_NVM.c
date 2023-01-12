@@ -85,18 +85,18 @@ void APP_NVM_Validate(void)
             if ((CheckSectionHeader(i) == false) ||
                 (APP_NVM_Custom_CheckSectionData(i) == false))
             {
-                HW_TERM_PrintColor("Defaulting section!\n", KRED);
+                HW_TERM_Print("Defaulting section!\n");
                 APP_NVM_DefaultSection(i);
             }
             else
             {
-                HW_TERM_PrintColor("Section check complete.\n", KGRN);
+                HW_TERM_Print("Section check complete.\n");
             }
         }
     }
     else
     {
-        HW_TERM_PrintColor("Skipping sections checks due to bad map!\n", KRED);
+        HW_TERM_Print("Skipping sections checks due to bad map!\n");
     }
 }
 
@@ -274,12 +274,12 @@ static bool CheckSectionHeader(uint8_t map_index)
     // Confirm the expected section type.
     if (hdr.type == Section_Map[map_index].type)
     {
-        HW_TERM_PrintColor("Section match.\n", KGRN);
+        HW_TERM_Print("Section match.\n");
     }
     else
     {
         section_good = false;
-        HW_TERM_PrintColor("Type mismatch!\n", KRED);
+        HW_TERM_Print("Type mismatch!\n");
     }
 
     // Only check addressing for sections that store multiple entries of the type.  Otherwise, we expect there to just be one and the
@@ -291,23 +291,23 @@ static bool CheckSectionHeader(uint8_t map_index)
         if ((hdr.current_addr <= Section_Map[map_index].end_addr) &&   // Not past end.
             (hdr.current_addr >= (Section_Map[map_index].start_addr + sizeof(APP_NVM_SECTION_HDR_T))))  // Starting after header.
         {
-            HW_TERM_PrintColor("Addr in range.\n", KGRN);
+            HW_TERM_Print("Addr in range.\n");
         }
         else
         {
             section_good = false;
-            HW_TERM_PrintColor("Addr out of range!\n", KRED);
+            HW_TERM_Print("Addr out of range!\n");
         }
 
         // Confirm that the entry length stored in the header matches the configured entry length.
         if (hdr.entry_len == Section_Map[map_index].entry_len)
         {
-            HW_TERM_PrintColor("Entry len is correct.\n", KGRN);
+            HW_TERM_Print("Entry len is correct.\n");
         }
         else
         {
             section_good = false;
-            HW_TERM_PrintColor("Entry len is incorrect!\n", KRED);
+            HW_TERM_Print("Entry len is incorrect!\n");
         }
 
         // The expected current address should be the length of an entry times the number of entries plus the size of the header.
@@ -317,24 +317,24 @@ static bool CheckSectionHeader(uint8_t map_index)
 
         if (hdr.current_addr == exp_current_addr)
         {
-            HW_TERM_PrintColor("Addr is correct.\n", KGRN);
+            HW_TERM_Print("Addr is correct.\n");
         }
         else
         {
             section_good = false;
-            HW_TERM_PrintColor("Addr is incorrect!\n", KRED);
+            HW_TERM_Print("Addr is incorrect!\n");
         }
     }
     else  // Otherwise we're dealing with a single entry section type and we just want to make sure it is populated.
     {
         if (hdr.head == 1u)
         {
-            HW_TERM_PrintColor("Section is populated.\n", KGRN);
+            HW_TERM_Print("Section is populated.\n");
         }
         else
         {
             section_good = false;
-            HW_TERM_PrintColor("Section is not populated!\n", KRED);
+            HW_TERM_Print("Section is not populated!\n");
         }
     }
 
@@ -356,12 +356,12 @@ bool APP_NVM_VerifyChecksum(uint8_t * p_buf, uint8_t buf_len, uint8_t expected_c
     if(computed_checksum == expected_checksum)
     {
         checksum_good = true;
-        HW_TERM_PrintColor("Checksum correct.\n", KGRN);
+        HW_TERM_Print("Checksum correct.\n");
     }
     else
     {
         checksum_good = false;
-        HW_TERM_PrintColor("Checksum incorrect!\n", KRED);
+        HW_TERM_Print("Checksum incorrect!\n");
 
         sprintf((char*)str, "0x%x != 0x%x", expected_checksum, computed_checksum);
         HW_TERM_Print(str);
@@ -444,12 +444,12 @@ bool APP_NVM_GenericCheckData(uint8_t map_index)
 
     if (section_good == true)
     {
-       HW_TERM_PrintColor("Section data good.\n", KGRN);
+       HW_TERM_Print("Section data good.\n");
     }
     else
     {
        section_good = false;
-       HW_TERM_PrintColor("Section data bad!\n", KRED);
+       HW_TERM_Print("Section data bad!\n");
     }
 
     return section_good;
@@ -489,20 +489,20 @@ static bool CheckSectionMap(void)
           (Section_Map[i].start_addr <= prev_end))
         {
             map_good = false;
-            HW_TERM_PrintColor("Section overlap!\n", KRED);
+            HW_TERM_Print("Section overlap!\n");
         }
 
         // Start address must be < end address
         if(Section_Map[i].start_addr >= Section_Map[i].end_addr)
         {
-            HW_TERM_PrintColor("Bad section addresses!\n", KRED);
+            HW_TERM_Print("Bad section addresses!\n");
             map_good = false;
         }
 
         // Make sure we have not gone over the magic number area
         if(Section_Map[i].end_addr > APP_NVM_LAST_ADDR)
         {
-            HW_TERM_PrintColor("End address past end of NVM!\n", KRED);
+            HW_TERM_Print("End address past end of NVM!\n");
             map_good = false;
         }
 
@@ -511,11 +511,11 @@ static bool CheckSectionMap(void)
 
     if (map_good == true)
     {
-        HW_TERM_PrintColor("Section map good.\n", KGRN);
+        HW_TERM_Print("Section map good.\n");
     }
     else
     {
-        HW_TERM_PrintColor("Section map error!\n", KRED);
+        HW_TERM_Print("Section map error!\n");
     }
 
     return map_good;
@@ -538,11 +538,11 @@ static bool CheckForMagicValue(void)
 
     if (magic_good == true)
     {
-        HW_TERM_PrintColor("Magic value good.\n", KGRN);
+        HW_TERM_Print("Magic value good.\n");
     }
     else
     {
-        HW_TERM_PrintColor("No magic value!\n", KRED);
+        HW_TERM_Print("No magic value!\n");
     }
 
     return magic_good;
@@ -550,7 +550,7 @@ static bool CheckForMagicValue(void)
 
 void APP_NVM_DefaultSensorDataLogs(void)
 {
-    HW_TERM_PrintColor("Defaulting Sensor Data Logs to 0 \n", KMAG);
+    HW_TERM_Print("Defaulting Sensor Data Logs to 0 \n");
     APP_NVM_DefaultSection(APP_NVM_SECT_TYPE_SENSOR_DATA);
 }
 
@@ -558,7 +558,7 @@ void APP_NVM_DefaultAll(void)
 {
     uint8_t i = 0;
 
-    HW_TERM_PrintColor("Defaulting all sections!\n", KRED);
+    HW_TERM_Print("Defaulting all sections!\n");
 
     for(i=0; i < APP_NVM_NUM_SECTIONS; i++)
     {

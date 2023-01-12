@@ -2,7 +2,7 @@
  * File: waterPadFiltering_types.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:07
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:08
  */
 
 #ifndef WATERPADFILTERING_TYPES_H
@@ -17,14 +17,14 @@
 
 typedef struct {
   uint8_T buffer_idx;
-  int16_T pad_1_buffer[8];
-  int16_T pad_2_buffer[8];
-  int16_T pad_3_buffer[8];
-  int16_T pad_4_buffer[8];
-  int16_T pad_5_buffer[8];
-  int16_T pad_6_buffer[8];
-  int16_T pad_7_buffer[8];
-  int16_T pad_8_buffer[8];
+  int16_T pad_1_buffer[6];
+  int16_T pad_2_buffer[6];
+  int16_T pad_3_buffer[6];
+  int16_T pad_4_buffer[6];
+  int16_T pad_5_buffer[6];
+  int16_T pad_6_buffer[6];
+  int16_T pad_7_buffer[6];
+  int16_T pad_8_buffer[6];
 } padFilteringData_t;
 
 #endif                                 /*typedef_padFilteringData_t*/

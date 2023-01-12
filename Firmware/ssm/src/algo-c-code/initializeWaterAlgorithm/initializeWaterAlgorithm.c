@@ -2,7 +2,7 @@
  * File: initializeWaterAlgorithm.c
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:57:44
+ * C/C++ source code generated on  : 27-Oct-2022 08:09:38
  */
 
 /* Include Files */
@@ -43,16 +43,6 @@ void initializeWaterAlgorithm(waterAlgoData_t *Algorithm_Data,
 
   /*  Reset the pad filtering buffers */
   Pad_Filter_Data->buffer_idx = 0U;
-  for (i = 0; i < 8; i++) {
-    Pad_Filter_Data->pad_1_buffer[i] = 0;
-    Pad_Filter_Data->pad_2_buffer[i] = 0;
-    Pad_Filter_Data->pad_3_buffer[i] = 0;
-    Pad_Filter_Data->pad_4_buffer[i] = 0;
-    Pad_Filter_Data->pad_5_buffer[i] = 0;
-    Pad_Filter_Data->pad_6_buffer[i] = 0;
-    Pad_Filter_Data->pad_7_buffer[i] = 0;
-    Pad_Filter_Data->pad_8_buffer[i] = 0;
-  }
 
   /*  Reset the algorithm data */
   /*  Reset flags */
@@ -112,6 +102,25 @@ void initializeWaterAlgorithm(waterAlgoData_t *Algorithm_Data,
   Algorithm_Data->pad6_OA = 0;
   Algorithm_Data->pad7_OA = 0;
   Algorithm_Data->pad8_OA = 0;
+  Algorithm_Data->delta_buffer.buffer_idx = 0U;
+  for (i = 0; i < 6; i++) {
+    Pad_Filter_Data->pad_1_buffer[i] = 0;
+    Pad_Filter_Data->pad_2_buffer[i] = 0;
+    Pad_Filter_Data->pad_3_buffer[i] = 0;
+    Pad_Filter_Data->pad_4_buffer[i] = 0;
+    Pad_Filter_Data->pad_5_buffer[i] = 0;
+    Pad_Filter_Data->pad_6_buffer[i] = 0;
+    Pad_Filter_Data->pad_7_buffer[i] = 0;
+    Pad_Filter_Data->pad_8_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_1_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_2_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_3_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_4_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_5_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_6_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_7_buffer[i] = 0;
+    Algorithm_Data->delta_buffer.pad_8_buffer[i] = 0;
+  }
 
   /*  Reset volume data */
   Algorithm_Data->water_volume_sum = 0L;

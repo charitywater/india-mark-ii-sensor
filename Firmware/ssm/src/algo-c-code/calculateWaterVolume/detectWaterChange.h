@@ -2,7 +2,7 @@
  * File: detectWaterChange.h
  *
  * MATLAB Coder version            : 5.0
- * C/C++ source code generated on  : 18-May-2021 11:58:35
+ * C/C++ source code generated on  : 27-Oct-2022 08:10:46
  */
 
 #ifndef DETECTWATERCHANGE_H
@@ -33,7 +33,7 @@
  */
 
 /* Function Declarations */
-extern void detectWaterChange(int32_T diff, padWaterState_t *water_state,
+extern void detectWaterChange(int16_T diff, padWaterState_t *water_state,
   uint8_T counter_thresh);
 
 #endif

@@ -288,11 +288,11 @@ void HW_ENV_DoTest(void)
 {
     if (HW_ENV_CheckMfgID() == true)
     {
-        HW_TERM_PrintColor("\nHW_ENV: HDC2010 Mfg ID test pass.\n", KGRN);
+        HW_TERM_Print("\nHW_ENV: HDC2010 Mfg ID test pass.\n");
     }
     else
     {
-        HW_TERM_PrintColor("\nHW_ENV: HDC2010 Mfg ID test fail!\n", KRED);
+        HW_TERM_Print("\nHW_ENV: HDC2010 Mfg ID test fail!\n");
     }
 }
 
@@ -314,7 +314,7 @@ static bool xWriteToRegister(uint8_t reg, uint8_t value)
 
     if ( stat == false )
     {
-        HW_TERM_PrintColor("\nHW_ENV: FAILED TO READ REGISTER \n", KRED);
+        HW_TERM_Print("\nHW_ENV: FAILED TO READ REGISTER \n");
         APP_indicateError(TEMP_HUMID_ERROR);
     }
 
